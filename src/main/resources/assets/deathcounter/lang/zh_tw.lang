@@ -1,0 +1,9 @@
+#Translated by hit1205
+dc.message.deathAndRank=死亡次數: %1$s 排行: %2$s
+dc.message.death=你死了 %s 次。
+dc.message.rank=在這個伺服器上你是第 %s 名。
+dc.command.resetAll=DC: 重設所有玩家的死亡次數
+dc.command.resetPlayer=DC: 重設 %s 的死亡次數
+dc.command.noDeathsPlayer=DC: %s 還沒有死過.
+dc.command.noDeaths=在這個伺服器上還沒有人死過。
+dc.command.leaderboard=死亡次數排行榜:

@@ -1,0 +1,8 @@
+dc.message.deathAndRank=Morți: %1$s Rank: %2$s
+dc.message.death=Ai murit de %s ori.
+dc.message.rank=Ești al %s -lea de pe server.
+dc.command.resetAll=DC: Se resetează morțile tuturor jucătorilor...
+dc.command.resetPlayer=DC: Se resetează morțile lui %s ...
+dc.command.noDeathsPlayer=DC: %s nu a murit încă.
+dc.command.noDeaths=Nimeni nu a murit încă pe acest server.
+dc.command.leaderboard=Clasament al morților:

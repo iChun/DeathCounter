@@ -1,0 +1,8 @@
+dc.message.deathAndRank=Morts: %1$s Rang: %2$s
+dc.message.death=Vous êtes mort %s fois.
+dc.message.rank=Vous avez le rang n°%s sur le serveur.
+dc.command.resetAll=DC: Remise à zéro des morts pour tous les joueurs
+dc.command.resetPlayer=DC: Remise à zéro des morts pour %s
+dc.command.noDeathsPlayer=DC: %s n'est jamais mort.
+dc.command.noDeaths=Personne n'est mort sur le serveur pour le moment.
+dc.command.leaderboard=Classement des morts:

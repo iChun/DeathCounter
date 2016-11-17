@@ -1,0 +1,9 @@
+#Translated by giszx
+dc.message.deathAndRank=Dødstal: %1$s Rank: %2$s
+dc.message.death=Du er død %s gange.
+dc.message.rank=Du er rankeret %s på serveren.
+dc.command.resetAll=DC: Nulstilling af dødstal for alle spillere
+dc.command.resetPlayer=DC: Nulstilling af dødstak for %s
+dc.command.noDeathsPlayer=DC: %s har ingen dødstal.
+dc.command.noDeaths=Ingen dødsfald er forekommet på denne server endnu.
+dc.command.leaderboard=Døds Leaderboard:

@@ -1,0 +1,8 @@
+dc.message.deathAndRank=Dödsfall: %1$s Rank: %2$s
+dc.message.death=Du har dött %s gånger.
+dc.message.rank=Du är rankad %s på denna server.
+dc.command.resetAll=DC: Återställer dödsfall för alla spelare
+dc.command.resetPlayer=DC: Äterställer dödsfall för %s
+dc.command.noDeathsPlayer=DC: %s har inga dödsfall.
+dc.command.noDeaths=Ingen har dött på denna server.
+dc.command.leaderboard=Dödsfallstopplista:

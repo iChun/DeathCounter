@@ -1,0 +1,8 @@
+dc.message.deathAndRank=Morti: %1$s Posizione: %2$s
+dc.message.death=Sei morto %s volte.
+dc.message.rank=Sei nella %s posizione in questo server.
+dc.command.resetAll=DC: Azzeramento del contatore per tutti i giocatori
+dc.command.resetPlayer=DC: Azzeramento del contatore per %s
+dc.command.noDeathsPlayer=DC: %s non è mai morto.
+dc.command.noDeaths=Nessuno è mai morto in questo server.
+dc.command.leaderboard=Classifica delle morti:

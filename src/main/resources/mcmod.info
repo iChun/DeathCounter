@@ -1,0 +1,21 @@
+[
+{
+  "modid" : "DeathCounter",
+  "name" : "DeathCounter",
+  "version" : "${version}",
+  "url" : "http://ichun.us/mods/death-counter/",
+  "credits" : "",
+  "authors": [
+    "iChun"
+  ],
+  "description": "Simple death counter for servers.",
+  "logoFile" : "",
+  "updateUrl" : "",
+  "parent" : "",
+  "screenshots": [
+  ],
+  "dependancies": [
+    "Forge"
+  ]
+}
+]
