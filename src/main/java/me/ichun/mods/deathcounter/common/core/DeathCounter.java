@@ -35,7 +35,7 @@ import java.util.Properties;
 		version = DeathCounter.version,
 		acceptableRemoteVersions = "*",
         dependencies = "required-after:forge@[13.19.0.2141,)",
-        acceptedMinecraftVersions = "[1.11,1.12)"
+        acceptedMinecraftVersions = "[1.12,1.13)"
 )
 public class DeathCounter
 {
@@ -271,12 +271,12 @@ public class DeathCounter
 			{
 				if(message == 1)
 				{
-					player.addChatMessage(new TextComponentTranslation("dc.message.deathAndRank", getDeathCount(player.getName()), getDisplayedRank(player.getName())));
+					player.sendStatusMessage(new TextComponentTranslation("dc.message.deathAndRank", getDeathCount(player.getName()), getDisplayedRank(player.getName())), false);
 				}
 				if(message == 2)
 				{
-					player.addChatMessage(new TextComponentTranslation("dc.message.death", getDeathCount(player.getName())));
-					player.addChatMessage(new TextComponentTranslation("dc.message.rank", getDisplayedRank(player.getName())));
+					player.sendStatusMessage(new TextComponentTranslation("dc.message.death", getDeathCount(player.getName())), false);
+					player.sendStatusMessage(new TextComponentTranslation("dc.message.rank", getDisplayedRank(player.getName())), false);
 				}
 			}
 		}

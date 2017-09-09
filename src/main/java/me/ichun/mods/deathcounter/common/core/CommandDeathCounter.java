@@ -19,19 +19,19 @@ import java.util.List;
 public class CommandDeathCounter extends CommandBase
 {
 	@Override
-	public String getCommandName()
+	public String getName()
 	{
 		return "dc";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender par1ICommandSender)
+	public String getUsage(ICommandSender par1ICommandSender)
 	{
-		return "/" + this.getCommandName() + " (leaderboard/reset) [all/user]";
+		return "/" + this.getName() + " (leaderboard/reset) [all/user]";
 	}
 
 	@Override
-	public List<String> getCommandAliases()
+	public List<String> getAliases()
 	{
 		return Collections.singletonList("deathcounter");
 	}
@@ -77,23 +77,23 @@ public class CommandDeathCounter extends CommandBase
 						}
 						else
 						{
-							commandSender.addChatMessage(new TextComponentTranslation("dc.command.noDeathsPlayer", args[1]));
+							commandSender.sendMessage(new TextComponentTranslation("dc.command.noDeathsPlayer", args[1]));
 						}
 					}
 				}
 				else
 				{
-					throw new WrongUsageException("/" + this.getCommandName() + " reset [all/user]");
+					throw new WrongUsageException("/" + this.getName() + " reset [all/user]");
 				}
 			}
 			else
 			{
-				throw new WrongUsageException("/" + this.getCommandName() + " (leaderboard/reset) [all/user]");
+				throw new WrongUsageException("/" + this.getName() + " (leaderboard/reset) [all/user]");
 			}
 		}
 		else
 		{
-			throw new WrongUsageException("/" + this.getCommandName() + " (leaderboard/reset) [all/user]");
+			throw new WrongUsageException("/" + this.getName() + " (leaderboard/reset) [all/user]");
 		}
 	}
 
@@ -113,7 +113,7 @@ public class CommandDeathCounter extends CommandBase
 		}
 		else
 		{
-			List players = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerList();
+			List players = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers();
 			for(Object o : players)
 			{
 				EntityPlayer player = (EntityPlayer)o;
@@ -141,12 +141,12 @@ public class CommandDeathCounter extends CommandBase
 			{
 				if(DeathCounter.ranking.isEmpty())
 				{
-					player.addChatMessage(new TextComponentTranslation("dc.command.noDeaths"));
+					player.sendStatusMessage(new TextComponentTranslation("dc.command.noDeaths"), false);
 				}
 				else
 				{
 					boolean isPlayer = false;
-					player.addChatMessage(new TextComponentTranslation("dc.command.leaderboard"));
+					player.sendStatusMessage(new TextComponentTranslation("dc.command.leaderboard"), false);
 					for(int i = 1; i <= DeathCounter.leaderboardCount && i - 1 < DeathCounter.ranking.size(); i++)
 					{
 						String playerName = DeathCounter.ranking.get(i - 1);
@@ -155,12 +155,12 @@ public class CommandDeathCounter extends CommandBase
 							isPlayer = true;
 						}
 						int rank = DeathCounter.instance.getDisplayedRank(playerName);
-						player.addChatMessage(new TextComponentString((rank == 1 ? "\u00A7e" : rank == 2 ? "\u00A77" : rank == 3 ? "\u00A74" : "") + (playerName.equals(player.getName()) ? " ->" : "    ") + rank + "  " + DeathCounter.ranking.get(i - 1) + " (" + DeathCounter.instance.getDeathCount(DeathCounter.ranking.get(i - 1)) + (DeathCounter.instance.getDeathCount(DeathCounter.ranking.get(i - 1)) == 1 ? " Death)" : " Deaths)")));
+						player.sendStatusMessage(new TextComponentString((rank == 1 ? "\u00A7e" : rank == 2 ? "\u00A77" : rank == 3 ? "\u00A74" : "") + (playerName.equals(player.getName()) ? " ->" : "    ") + rank + "  " + DeathCounter.ranking.get(i - 1) + " (" + DeathCounter.instance.getDeathCount(DeathCounter.ranking.get(i - 1)) + (DeathCounter.instance.getDeathCount(DeathCounter.ranking.get(i - 1)) == 1 ? " Death)" : " Deaths)")), false);
 					}
 					if(!isPlayer)
 					{
 						int rank = DeathCounter.instance.getDisplayedRank(player.getName());
-						player.addChatMessage(new TextComponentString(" ->" + rank + (rank >= 10 ? " " : "  ") + player.getName() + " (" + DeathCounter.instance.getDeathCount(player.getName()) + (DeathCounter.instance.getDeathCount(player.getName()) == 1 ? " Death)" : " Deaths)")));
+						player.sendStatusMessage(new TextComponentString(" ->" + rank + (rank >= 10 ? " " : "  ") + player.getName() + " (" + DeathCounter.instance.getDeathCount(player.getName()) + (DeathCounter.instance.getDeathCount(player.getName()) == 1 ? " Death)" : " Deaths)")), false);
 					}
 				}
 			}
@@ -168,7 +168,7 @@ public class CommandDeathCounter extends CommandBase
 	}
 
 	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
 	{
 		if(args.length == 1)
 		{
@@ -176,7 +176,7 @@ public class CommandDeathCounter extends CommandBase
 		}
 		else if (args.length == 2)
 		{
-			return getListOfStringsMatchingLastWord(args, FMLCommonHandler.instance().getMinecraftServerInstance().getAllUsernames());
+			return getListOfStringsMatchingLastWord(args, FMLCommonHandler.instance().getMinecraftServerInstance().getOnlinePlayerNames());
 		}
 		return null;
 	}
