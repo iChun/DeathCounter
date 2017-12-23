@@ -1,15 +1,22 @@
-*.class
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
 
-# Package Files #
-*.war
-*.ear
-
-# IDEA Files #
+# idea
+out
+*.ipr
+*.iws
 *.iml
-/.idea
+.idea
 
-# Gradle #
-/.gradle
-/build
-/libs
-/src/api
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
