@@ -292,6 +292,7 @@ public class DeathCounter
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void console(String s, Level logLevel)
 	{
 		FMLLog.log("DeathCounter", logLevel, "%s", s);

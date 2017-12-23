@@ -5,6 +5,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -113,7 +114,7 @@ public class CommandDeathCounter extends CommandBase
 		}
 		else
 		{
-			List players = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers();
+			List<EntityPlayerMP> players = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers();
 			for(Object o : players)
 			{
 				EntityPlayer player = (EntityPlayer)o;
