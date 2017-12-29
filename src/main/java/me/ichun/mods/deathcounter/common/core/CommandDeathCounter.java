@@ -73,7 +73,7 @@ public class CommandDeathCounter extends CommandBase
 					{
 						if(DeathCounter.instance.clearDeath(args[1]))
 						{
-							notifyCommandListener(commandSender, this, "dc.command.resetPlayer");
+							notifyCommandListener(commandSender, this, "dc.command.resetPlayer", args[0]);
 							DeathCounter.console(commandSender.getName() + ": Resetting deaths for " + args[1], Level.INFO);
 						}
 						else
