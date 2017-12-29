@@ -178,13 +178,15 @@ public class DeathCounter
 
 	public void addDeath(EntityPlayer player)
 	{
-		File file = new File(saveDir, player.getName() + ".dat");
-		NBTTagCompound tag = new NBTTagCompound();;
 		int deaths = getDeathCount(player.getName()) + 1;
-		tag.setInteger("deaths", deaths);
-
 		deathCounter.put(player.getName(), deaths);
 		sortRanking();
+		
+		if (singleSession == 1) return;
+		File file = new File(saveDir, player.getName() + ".dat");
+		NBTTagCompound tag = new NBTTagCompound();;
+		tag.setInteger("deaths", deaths);
+
 
 		try(FileOutputStream fos = new FileOutputStream(file))
 		{
