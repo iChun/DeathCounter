@@ -95,7 +95,6 @@ public class DeathCounter
 		sortRanking();
 	}
 
-
 	public void loadDeaths(WorldServer world)
 	{
 		File dir = new File(world.getChunkSaveLocation(), "deathCounter");
@@ -165,8 +164,7 @@ public class DeathCounter
 
 			try(FileOutputStream fos = new FileOutputStream(text))
 			{
-				if(!text.exists())
-					text.createNewFile();
+				if(!text.exists()) text.createNewFile();
 				s.store(fos, null);
 			}
 			catch(IOException e)
@@ -181,12 +179,11 @@ public class DeathCounter
 		int deaths = getDeathCount(player.getName()) + 1;
 		deathCounter.put(player.getName(), deaths);
 		sortRanking();
-		
-		if (singleSession == 1) return;
-		File file = new File(saveDir, player.getName() + ".dat");
-		NBTTagCompound tag = new NBTTagCompound();;
-		tag.setInteger("deaths", deaths);
 
+		if(singleSession == 1) return;
+		File file = new File(saveDir, player.getName() + ".dat");
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setInteger("deaths", deaths);
 
 		try(FileOutputStream fos = new FileOutputStream(file))
 		{
