@@ -201,24 +201,25 @@ public class DeathCounter
 	{
 		if(s == null)
 		{
+			boolean success = true;
 			File[] files = saveDir.listFiles();
 			for(File file : files)
 			{
-				file.delete();
+				success = file.delete();
 			}
 			deathCounter.clear();
 			ranking.clear();
-			return true;
+			return success;
 		}
 		else
 		{
 			File file = new File(saveDir, s + ".dat");
 			if(file.exists())
 			{
-				file.delete();
+				boolean success = file.delete();
 				deathCounter.remove(s);
 				sortRanking();
-				return true;
+				return success;
 			}
 			else
 			{
