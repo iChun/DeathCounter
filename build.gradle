@@ -14,14 +14,14 @@ compileJava {
     sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-version = "1.12.2-1.0.0"
+version = "1.12.2-1.1.0"
 group= "deathcounter"
 archivesBaseName = "DeathCounter"
 
 minecraft {
-    version = "1.12.2-14.23.1.2555"
+    version = "1.12.2-14.23.5.2847"
     runDir = "run"
-    mappings = "snapshot_20171003"
+    mappings = "stable_39"
 }
 
 processResources
