@@ -209,7 +209,13 @@ public class DeathCounter
             File[] files = saveDir.listFiles();
             for(File file : files)
             {
-                success = file.delete();
+                if(file.getName().endsWith(".dat"))
+                {
+                    if(!file.delete())
+                    {
+                        success = false;
+                    }
+                }
             }
             deathCounter.clear();
             ranking.clear();
@@ -220,10 +226,9 @@ public class DeathCounter
             File file = new File(saveDir, s + ".dat");
             if(file.exists())
             {
-                boolean success = file.delete();
                 deathCounter.remove(s);
                 sortRanking();
-                return success;
+                return file.delete();
             }
             else
             {

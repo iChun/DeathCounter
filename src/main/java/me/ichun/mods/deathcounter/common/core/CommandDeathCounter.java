@@ -66,7 +66,7 @@ public class CommandDeathCounter extends CommandBase
                 {
                     if(args[1].equalsIgnoreCase("all"))
                     {
-                        if(DeathCounter.instance.clearDeath(args[1]))
+                        if(DeathCounter.instance.clearDeath(null))
                         {
                             notifyCommandListener(commandSender, this, "dc.command.resetAll");
                             DeathCounter.console(commandSender.getName() + ": Resetting deaths for all players", Level.INFO);
@@ -132,7 +132,7 @@ public class CommandDeathCounter extends CommandBase
         {
             if(DeathCounter.ranking.isEmpty())
             {
-                DeathCounter.console("No deaths have occured on this server yet.", Level.INFO);
+                DeathCounter.console("No deaths have occurred on this server yet.", Level.INFO);
             }
             else
             {
