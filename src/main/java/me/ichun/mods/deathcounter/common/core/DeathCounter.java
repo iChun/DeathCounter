@@ -95,7 +95,6 @@ public class DeathCounter
 		sortRanking();
 	}
 
-
 	public void loadDeaths(WorldServer world)
 	{
 		File dir = new File(world.getChunkSaveLocation(), "deathCounter");
@@ -165,8 +164,7 @@ public class DeathCounter
 
 			try(FileOutputStream fos = new FileOutputStream(text))
 			{
-				if(!text.exists())
-					text.createNewFile();
+				if(!text.exists()) text.createNewFile();
 				s.store(fos, null);
 			}
 			catch(IOException e)
@@ -178,13 +176,14 @@ public class DeathCounter
 
 	public void addDeath(EntityPlayer player)
 	{
-		File file = new File(saveDir, player.getName() + ".dat");
-		NBTTagCompound tag = new NBTTagCompound();;
 		int deaths = getDeathCount(player.getName()) + 1;
-		tag.setInteger("deaths", deaths);
-
 		deathCounter.put(player.getName(), deaths);
 		sortRanking();
+
+		if(singleSession == 1) return;
+		File file = new File(saveDir, player.getName() + ".dat");
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setInteger("deaths", deaths);
 
 		try(FileOutputStream fos = new FileOutputStream(file))
 		{
@@ -201,24 +200,25 @@ public class DeathCounter
 	{
 		if(s == null)
 		{
+			boolean success = true;
 			File[] files = saveDir.listFiles();
 			for(File file : files)
 			{
-				file.delete();
+				success = file.delete();
 			}
 			deathCounter.clear();
 			ranking.clear();
-			return true;
+			return success;
 		}
 		else
 		{
 			File file = new File(saveDir, s + ".dat");
 			if(file.exists())
 			{
-				file.delete();
+				boolean success = file.delete();
 				deathCounter.remove(s);
 				sortRanking();
-				return true;
+				return success;
 			}
 			else
 			{
@@ -292,6 +292,7 @@ public class DeathCounter
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void console(String s, Level logLevel)
 	{
 		FMLLog.log("DeathCounter", logLevel, "%s", s);

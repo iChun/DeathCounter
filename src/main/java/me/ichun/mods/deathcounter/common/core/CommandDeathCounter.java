@@ -5,6 +5,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -65,14 +66,21 @@ public class CommandDeathCounter extends CommandBase
 				{
 					if(args[1].equalsIgnoreCase("all"))
 					{
-						notifyCommandListener(commandSender, this, "dc.command.resetAll");
-						DeathCounter.console(commandSender.getName() + ": Resetting deaths for all players", Level.INFO);
+						if(DeathCounter.instance.clearDeath(args[1]))
+						{
+							notifyCommandListener(commandSender, this, "dc.command.resetAll");
+							DeathCounter.console(commandSender.getName() + ": Resetting deaths for all players", Level.INFO);
+						}
+						else
+						{
+							throw new CommandException("commands.generic.exception");
+						}
 					}
 					else
 					{
 						if(DeathCounter.instance.clearDeath(args[1]))
 						{
-							notifyCommandListener(commandSender, this, "dc.command.resetPlayer");
+							notifyCommandListener(commandSender, this, "dc.command.resetPlayer", args[0]);
 							DeathCounter.console(commandSender.getName() + ": Resetting deaths for " + args[1], Level.INFO);
 						}
 						else
@@ -113,7 +121,7 @@ public class CommandDeathCounter extends CommandBase
 		}
 		else
 		{
-			List players = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers();
+			List<EntityPlayerMP> players = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers();
 			for(Object o : players)
 			{
 				EntityPlayer player = (EntityPlayer)o;
@@ -137,7 +145,7 @@ public class CommandDeathCounter extends CommandBase
 		}
 		else
 		{
-			for(EntityPlayer player: playersToNotify)
+			for(EntityPlayer player : playersToNotify)
 			{
 				if(DeathCounter.ranking.isEmpty())
 				{
