@@ -260,7 +260,7 @@ public class DeathCounter
 		return ranking.size() + 1;
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
+	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onDeath(LivingDeathEvent event)
 	{
 		if(event.getEntityLiving() instanceof EntityPlayer && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUsername(event.getEntityLiving().getName()) != null)
