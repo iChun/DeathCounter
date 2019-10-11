@@ -1,0 +1,11 @@
+{
+  "_comment": "Translated by Holter12",
+  "message.deathcounter.deathAndRank": "Dødstall: %s Rank: %s",
+  "message.deathcounter.death": "Du har død %s ganger.",
+  "message.deathcounter.rank": "Du er rangert %s på serveren.",
+  "commands.deathcounter.resetAll": "DC: Nulstilling av dødstall for alle spillere",
+  "commands.deathcounter.resetPlayer": "DC: Nulstilling av dødsfall for %s",
+  "commands.deathcounter.noDeathsPlayer": "DC: %s har ingen dødstall.",
+  "commands.deathcounter.noDeaths": "Ingen dødsfall er forekommet på denne server enda.",
+  "commands.deathcounter.leaderboard": "Døds Leaderboard:"
+}

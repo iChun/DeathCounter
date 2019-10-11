@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[28,)" #forge version dep
+issueTrackerURL="https://github.com/iChun/Death-Counter/issues"
+
+[[mods]]
+    modId="deathcounter"
+    version="${file.jarVersion}" #mandatory
+    displayName="Death Counter"
+    displayURL="https://ichun.me/mods/death-counter/"
+    authors="iChun"
+    description='''
+    Simple death counter for servers.
+    '''
+
+[[dependencies.betterthanbunnies]]
+    modId="forge"
+    mandatory=true
+    versionRange="[28,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.betterthanbunnies]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.14.4]"
+    ordering="NONE"
+    side="BOTH"

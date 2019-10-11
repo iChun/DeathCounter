@@ -16,7 +16,13 @@ out
 # gradle
 build
 .gradle
+libs
 
 # other
 eclipse
 run
+
+# java
+*.class
+*.war
+*.ear

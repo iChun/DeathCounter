@@ -1,0 +1,10 @@
+{
+  "message.deathcounter.deathAndRank": "Смертей: %s Ранг: %s",
+  "message.deathcounter.death": "Вы умерли: %s раз(а).",
+  "message.deathcounter.rank": "Ваш ранг на сервере: %s.",
+  "commands.deathcounter.resetAll": "DC: Сброс смертей для всех игроков",
+  "commands.deathcounter.resetPlayer": "DC: Сброс смертей для %s",
+  "commands.deathcounter.noDeathsPlayer": "DC: %s не умирал.",
+  "commands.deathcounter.noDeaths": "На этом сервере ещё никто не умирал.",
+  "commands.deathcounter.leaderboard": "Таблица смертей:"
+}

@@ -1,0 +1,10 @@
+{
+  "message.deathcounter.deathAndRank": "Deaths: %s排名: %s",
+  "message.deathcounter.death": "你已经阵亡%s次.",
+  "message.deathcounter.rank": "当前服务器你排名第%s.",
+  "commands.deathcounter.resetAll": "[死亡计数器]重置所有玩家的死亡次数",
+  "commands.deathcounter.resetPlayer": "[死亡计数器]重置玩家%s的死亡次数",
+  "commands.deathcounter.noDeathsPlayer": "[死亡计数器]%s未尝一死.",
+  "commands.deathcounter.noDeaths": "死神还没有留意过这个服务器.",
+  "commands.deathcounter.leaderboard": "死亡告示牌:"
+}

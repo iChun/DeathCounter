@@ -1,0 +1,10 @@
+{
+  "message.deathcounter.deathAndRank": "Mortes: %s Ranking: %s",
+  "message.deathcounter.death": "Você morreu %s vezes.",
+  "message.deathcounter.rank": "Você está classificado na posição %s neste servidor.",
+  "commands.deathcounter.resetAll": "DC: Resetando as mortes de todos os jogadores",
+  "commands.deathcounter.resetPlayer": "DC: Resetando as mortes de %s",
+  "commands.deathcounter.noDeathsPlayer": "DC: %s não tem mortes.",
+  "commands.deathcounter.noDeaths": "Nenhuma morte ocorreu neste servidor ainda.",
+  "commands.deathcounter.leaderboard": "Ranking de Mortes:"
+}

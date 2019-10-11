@@ -1,0 +1,10 @@
+{
+  "message.deathcounter.deathAndRank": "Dödsfall: %s Rank: %s",
+  "message.deathcounter.death": "Du har dött %s gånger.",
+  "message.deathcounter.rank": "Du är rankad %s på denna server.",
+  "commands.deathcounter.resetAll": "DC: Återställer dödsfall för alla spelare",
+  "commands.deathcounter.resetPlayer": "DC: Äterställer dödsfall för %s",
+  "commands.deathcounter.noDeathsPlayer": "DC: %s har inga dödsfall.",
+  "commands.deathcounter.noDeaths": "Ingen har dött på denna server.",
+  "commands.deathcounter.leaderboard": "Dödsfallstopplista:"
+}

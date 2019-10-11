@@ -1,0 +1,10 @@
+{
+  "message.deathcounter.deathAndRank": "Morți: %s Rank: %s",
+  "message.deathcounter.death": "Ai murit de %s ori.",
+  "message.deathcounter.rank": "Ești al %s -lea de pe server.",
+  "commands.deathcounter.resetAll": "DC: Se resetează morțile tuturor jucătorilor...",
+  "commands.deathcounter.resetPlayer": "DC: Se resetează morțile lui %s ...",
+  "commands.deathcounter.noDeathsPlayer": "DC: %s nu a murit încă.",
+  "commands.deathcounter.noDeaths": "Nimeni nu a murit încă pe acest server.",
+  "commands.deathcounter.leaderboard": "Clasament al morților:"
+}
