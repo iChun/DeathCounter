@@ -12,13 +12,13 @@ issueTrackerURL="https://github.com/iChun/Death-Counter/issues"
     Simple death counter for servers.
     '''
 
-[[dependencies.betterthanbunnies]]
+[[dependencies.deathcounter]]
     modId="forge"
     mandatory=true
     versionRange="[28,)"
     ordering="NONE"
     side="BOTH"
-[[dependencies.betterthanbunnies]]
+[[dependencies.deathcounter]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.14.4]"
