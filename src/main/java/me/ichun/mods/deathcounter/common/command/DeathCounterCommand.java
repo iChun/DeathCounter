@@ -12,6 +12,7 @@ import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.*;
 import net.minecraftforge.server.command.TextComponentHelper;
 
@@ -24,7 +25,95 @@ public class DeathCounterCommand
     public static void register(CommandDispatcher<CommandSource> dispatcher)
     {
         LiteralCommandNode<CommandSource> command =
-            dispatcher.register(Commands.literal("dc")
+                dispatcher.register(Commands.literal("dc")
+                        .executes((source) -> {
+                            Entity ent = source.getSource().getEntity();
+                            if(ent != null)
+                            {
+                                ArrayList<Entity> ents = new ArrayList<>();
+                                ents.add(ent);
+                                broadcastLeaderboard(ents, null, DeathCounter.config.leaderboardCount.get());
+                            }
+                            else
+                            {
+                                broadcastLeaderboard(Collections.emptyList(), source.getSource(), DeathCounter.config.leaderboardCount.get());
+                            }
+                            return 0;
+                        })
+                        .then(Commands.literal("get")
+                                .then(Commands.argument("name", StringArgumentType.word())
+                                        .executes((source) -> {
+                                            String name = StringArgumentType.getString(source, "name");
+                                            int deaths = DeathHandler.getDeaths(name);
+                                            int rank = DeathHandler.getRank(name);
+                                            if(deaths > 0)
+                                            {
+                                                source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.get", name, deaths, rank), false);
+                                            }
+                                            else
+                                            {
+                                                source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.get.none", name), false);
+                                            }
+                                            return 0;
+                                        })))
+                        .then(Commands.literal("set").requires((p) -> p.hasPermissionLevel(DeathCounter.config.commandPermissionLevel.get()))
+                                .then(Commands.argument("name/\"all\"", StringArgumentType.word())
+                                        .then(Commands.argument("value", IntegerArgumentType.integer(0))
+                                                .executes((source) -> {
+                                                    int deaths = IntegerArgumentType.getInteger(source, "value");
+                                                    DeathHandler.setDeaths(StringArgumentType.getString(source, "name/\"all\""), deaths);
+                                                    return deaths;
+                                                }))))
+                        .then(Commands.literal("broadcast").requires((p) -> p.hasPermissionLevel(DeathCounter.config.commandPermissionLevel.get()))
+                                .executes((source) -> {
+                                    //send to all
+                                    source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.leaderboard.broadcasted"), true);
+                                    broadcastLeaderboard(source.getSource().getServer().getPlayerList().getPlayers(), null, DeathCounter.config.leaderboardCount.get());
+                                    return 0;
+                                })
+                                .then(Commands.argument("targets", EntityArgument.players())
+                                        .executes((source) -> {
+                                            //send to specific
+                                            source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.leaderboard.broadcasted"), true);
+                                            broadcastLeaderboard(EntityArgument.getPlayers(source, "targets"), null, DeathCounter.config.leaderboardCount.get());
+                                            return 0;
+                                        })
+                                        .then(Commands.argument("count", IntegerArgumentType.integer(1))
+                                                .executes((source) -> {
+                                                    //broadcast specific count
+                                                    source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.leaderboard.broadcasted"), true);
+                                                    broadcastLeaderboard(EntityArgument.getPlayers(source, "targets"), null, IntegerArgumentType.getInteger(source, "count"));
+                                                    return 0;
+                                                })))
+                                .then(Commands.argument("count", IntegerArgumentType.integer(1))
+                                        .executes((source) -> {
+                                            //broadcast specific count
+                                            source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.leaderboard.broadcasted"), true);
+                                            broadcastLeaderboard(source.getSource().getServer().getPlayerList().getPlayers(), null, IntegerArgumentType.getInteger(source, "count"));
+                                            return 0;
+                                        })))
+                        .then(Commands.literal("transfer").requires((p) -> p.hasPermissionLevel(DeathCounter.config.commandPermissionLevel.get()))
+                                .then(Commands.argument("from", StringArgumentType.word())
+                                        .then(Commands.argument("to", StringArgumentType.word())
+                                                .executes((source) -> {
+                                                    //transfer
+                                                    String from = StringArgumentType.getString(source, "from");
+                                                    String to = StringArgumentType.getString(source, "to");
+                                                    int deaths = DeathHandler.transferDeaths(from, to);
+                                                    if(deaths > 0)
+                                                    {
+                                                        source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.transfer", deaths, from, to), true);
+                                                    }
+                                                    else
+                                                    {
+                                                        throw TRANSFER_FAIL.create(from);
+                                                    }
+                                                    return deaths;
+                                                }))))
+                );
+
+        //register alias.
+        dispatcher.register(Commands.literal("deathcounter")
                 .executes((source) -> {
                     Entity ent = source.getSource().getEntity();
                     if(ent != null)
@@ -39,95 +128,7 @@ public class DeathCounterCommand
                     }
                     return 0;
                 })
-                .then(Commands.literal("get")
-                    .then(Commands.argument("name", StringArgumentType.word())
-                        .executes((source) -> {
-                            String name = StringArgumentType.getString(source, "name");
-                            int deaths = DeathHandler.getDeaths(name);
-                            int rank = DeathHandler.getRank(name);
-                            if(deaths > 0)
-                            {
-                                source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.get", name, deaths, rank), false);
-                            }
-                            else
-                            {
-                                source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.get.none", name), false);
-                            }
-                            return 0;
-                        })))
-                .then(Commands.literal("set").requires((p) -> p.hasPermissionLevel(DeathCounter.config.commandPermissionLevel.get()))
-                    .then(Commands.argument("name/\"all\"", StringArgumentType.word())
-                        .then(Commands.argument("value", IntegerArgumentType.integer(0))
-                                .executes((source) -> {
-                                    int deaths = IntegerArgumentType.getInteger(source, "value");
-                                    DeathHandler.setDeaths(StringArgumentType.getString(source, "name/\"all\""), deaths);
-                                    return deaths;
-                                }))))
-                .then(Commands.literal("broadcast").requires((p) -> p.hasPermissionLevel(DeathCounter.config.commandPermissionLevel.get()))
-                    .executes((source) -> {
-                        //send to all
-                        source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.leaderboard.broadcasted"), true);
-                        broadcastLeaderboard(source.getSource().getServer().getPlayerList().getPlayers(), null, DeathCounter.config.leaderboardCount.get());
-                        return 0;
-                    })
-                    .then(Commands.argument("targets", EntityArgument.players())
-                        .executes((source) -> {
-                            //send to specific
-                            source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.leaderboard.broadcasted"), true);
-                            broadcastLeaderboard(EntityArgument.getPlayers(source, "targets"), null, DeathCounter.config.leaderboardCount.get());
-                            return 0;
-                        })
-                        .then(Commands.argument("count", IntegerArgumentType.integer(1))
-                            .executes((source) -> {
-                                //broadcast specific count
-                                source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.leaderboard.broadcasted"), true);
-                                broadcastLeaderboard(EntityArgument.getPlayers(source, "targets"), null, IntegerArgumentType.getInteger(source, "count"));
-                                return 0;
-                            })))
-                    .then(Commands.argument("count", IntegerArgumentType.integer(1))
-                        .executes((source) -> {
-                            //broadcast specific count
-                            source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.leaderboard.broadcasted"), true);
-                            broadcastLeaderboard(source.getSource().getServer().getPlayerList().getPlayers(), null, IntegerArgumentType.getInteger(source, "count"));
-                            return 0;
-                        })))
-                .then(Commands.literal("transfer").requires((p) -> p.hasPermissionLevel(DeathCounter.config.commandPermissionLevel.get()))
-                    .then(Commands.argument("from", StringArgumentType.word())
-                        .then(Commands.argument("to", StringArgumentType.word())
-                            .executes((source) -> {
-                                //transfer
-                                String from = StringArgumentType.getString(source, "from");
-                                String to = StringArgumentType.getString(source, "to");
-                                int deaths = DeathHandler.transferDeaths(from, to);
-                                if(deaths > 0)
-                                {
-                                    source.getSource().sendFeedback(TextComponentHelper.createComponentTranslation(source.getSource().getEntity(), "commands.deathcounter.transfer", deaths, from, to), true);
-                                }
-                                else
-                                {
-                                    throw TRANSFER_FAIL.create(from);
-                                }
-                                return deaths;
-                            }))))
-        );
-
-        //register alias.
-        dispatcher.register(Commands.literal("deathcounter")
-            .executes((source) -> {
-                Entity ent = source.getSource().getEntity();
-                if(ent != null)
-                {
-                    ArrayList<Entity> ents = new ArrayList<>();
-                    ents.add(ent);
-                    broadcastLeaderboard(ents, null, DeathCounter.config.leaderboardCount.get());
-                }
-                else
-                {
-                    broadcastLeaderboard(Collections.emptyList(), source.getSource(), DeathCounter.config.leaderboardCount.get());
-                }
-                return 0;
-            })
-            .redirect(command));
+                .redirect(command));
     }
 
     public static void broadcastLeaderboard(Collection<? extends Entity> entities, CommandSource source, final int count)
@@ -148,7 +149,7 @@ public class DeathCounterCommand
                     TreeSet<String> set = e.getValue();
                     for(String s : set)
                     {
-                        source.sendFeedback(new StringTextComponent("   " + rank + " - " + s + " (" + e.getKey() + ")").setStyle(getStyleForRank(rank)), false);
+                        source.sendFeedback(setStyleForRank(new StringTextComponent("   " + rank + " - " + s + " (" + e.getKey() + ")"), rank), false); //setStyle
                         if(++done >= count) break;
                     }
                     if(done >= count) break;
@@ -160,10 +161,10 @@ public class DeathCounterCommand
         {
             entities.stream().filter(e->e instanceof ServerPlayerEntity).forEach(e -> {
                 ServerPlayerEntity player = (ServerPlayerEntity)e;
-                player.sendMessage(TextComponentHelper.createComponentTranslation(player, "commands.deathcounter.leaderboard"), ChatType.CHAT);
+                player.func_241151_a_(TextComponentHelper.createComponentTranslation(player, "commands.deathcounter.leaderboard"), ChatType.CHAT, Util.field_240973_b_); //sendMessage
                 if(DeathHandler.getRankings().isEmpty())
                 {
-                    player.sendMessage(TextComponentHelper.createComponentTranslation(player, "commands.deathcounter.leaderboard.none"), ChatType.CHAT);
+                    player.func_241151_a_(TextComponentHelper.createComponentTranslation(player, "commands.deathcounter.leaderboard.none"), ChatType.CHAT, Util.field_240973_b_); //sendMessage
                 }
                 else
                 {
@@ -176,7 +177,7 @@ public class DeathCounterCommand
                         {
                             if(done++ < count || s.equalsIgnoreCase(player.getName().getUnformattedComponentText()))
                             {
-                                player.sendMessage(new StringTextComponent((s.equalsIgnoreCase(player.getName().getUnformattedComponentText()) ? "-> " : "   ") + rank + " - " + s + " (" + e1.getKey() + ")").setStyle(getStyleForRank(rank)), ChatType.CHAT);
+                                player.func_241151_a_(setStyleForRank(new StringTextComponent((s.equalsIgnoreCase(player.getName().getUnformattedComponentText()) ? "-> " : "   ") + rank + " - " + s + " (" + e1.getKey() + ")"), rank), ChatType.CHAT, Util.field_240973_b_); //sendMessage
                             }
                         }
                         rank += e1.getValue().size();
@@ -186,14 +187,14 @@ public class DeathCounterCommand
         }
     }
 
-    private static Style getStyleForRank(int i)
+    private static ITextComponent setStyleForRank(TextComponent text, int i)
     {
         switch(i)
         {
-            case 1: return new Style().setColor(TextFormatting.YELLOW);
-            case 2: return new Style().setColor(TextFormatting.GRAY);
-            case 3: return new Style().setColor(TextFormatting.DARK_RED);
-            default: return new Style();
+            case 1: return text.func_240699_a_(TextFormatting.YELLOW);
+            case 2: return text.func_240699_a_(TextFormatting.GRAY);
+            case 3: return text.func_240699_a_(TextFormatting.DARK_RED);
+            default: return text;
         }
     }
 }

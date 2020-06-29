@@ -10,6 +10,7 @@ import me.ichun.mods.deathcounter.common.DeathCounter;
 import me.ichun.mods.deathcounter.common.command.DeathCounterCommand;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.MinecraftForge;
@@ -60,7 +61,7 @@ public class DeathHandler
         MinecraftServer server = event.getServer();
         if(!DeathCounter.config.singleSession.get())
         {
-            currentDeathsFile = server.getActiveAnvilConverter().getFile(server.getFolderName(), "deaths.json").toPath();
+            currentDeathsFile = server.anvilConverterForAnvilFile.getWorldDir().resolve("deaths.json");
             try
             {
                 FileWatcher.defaultInstance().addWatch(currentDeathsFile, () -> {
@@ -111,13 +112,13 @@ public class DeathHandler
         {
             case SHORT:
             {
-                player.sendMessage(new TranslationTextComponent("message.deathcounter.deathAndRank", playerDeaths, rank), ChatType.CHAT);
+                player.func_241151_a_(new TranslationTextComponent("message.deathcounter.deathAndRank", playerDeaths, rank), ChatType.CHAT, Util.field_240973_b_); //sendMessage
                 break;
             }
             case LONG:
             {
-                player.sendMessage(new TranslationTextComponent("message.deathcounter.death", playerDeaths), ChatType.CHAT);
-                player.sendMessage(new TranslationTextComponent("message.deathcounter.rank", rank), ChatType.CHAT);
+                player.func_241151_a_(new TranslationTextComponent("message.deathcounter.death", playerDeaths), ChatType.CHAT, Util.field_240973_b_); //sendMessage
+                player.func_241151_a_(new TranslationTextComponent("message.deathcounter.rank", rank), ChatType.CHAT, Util.field_240973_b_); //sendMessage
                 break;
             }
             default:
