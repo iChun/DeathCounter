@@ -15,6 +15,7 @@ import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -86,8 +87,12 @@ public class DeathHandler
             }
             loadDeaths();
         }
+    }
 
-        DeathCounterCommand.register(event.getCommandDispatcher());
+    @SubscribeEvent
+    public static void onRegisterCommands(RegisterCommandsEvent event)
+    {
+        DeathCounterCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent
@@ -112,13 +117,13 @@ public class DeathHandler
         {
             case SHORT:
             {
-                player.func_241151_a_(new TranslationTextComponent("message.deathcounter.deathAndRank", playerDeaths, rank), ChatType.CHAT, Util.field_240973_b_); //sendMessage
+                player.func_241151_a_(new TranslationTextComponent("message.deathcounter.deathAndRank", playerDeaths, rank), ChatType.CHAT, Util.DUMMY_UUID); //sendMessage
                 break;
             }
             case LONG:
             {
-                player.func_241151_a_(new TranslationTextComponent("message.deathcounter.death", playerDeaths), ChatType.CHAT, Util.field_240973_b_); //sendMessage
-                player.func_241151_a_(new TranslationTextComponent("message.deathcounter.rank", rank), ChatType.CHAT, Util.field_240973_b_); //sendMessage
+                player.func_241151_a_(new TranslationTextComponent("message.deathcounter.death", playerDeaths), ChatType.CHAT, Util.DUMMY_UUID); //sendMessage
+                player.func_241151_a_(new TranslationTextComponent("message.deathcounter.rank", rank), ChatType.CHAT, Util.DUMMY_UUID); //sendMessage
                 break;
             }
             default:

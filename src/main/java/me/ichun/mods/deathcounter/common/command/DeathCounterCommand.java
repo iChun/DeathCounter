@@ -161,10 +161,10 @@ public class DeathCounterCommand
         {
             entities.stream().filter(e->e instanceof ServerPlayerEntity).forEach(e -> {
                 ServerPlayerEntity player = (ServerPlayerEntity)e;
-                player.func_241151_a_(TextComponentHelper.createComponentTranslation(player, "commands.deathcounter.leaderboard"), ChatType.CHAT, Util.field_240973_b_); //sendMessage
+                player.func_241151_a_(TextComponentHelper.createComponentTranslation(player, "commands.deathcounter.leaderboard"), ChatType.CHAT, Util.DUMMY_UUID); //sendMessage
                 if(DeathHandler.getRankings().isEmpty())
                 {
-                    player.func_241151_a_(TextComponentHelper.createComponentTranslation(player, "commands.deathcounter.leaderboard.none"), ChatType.CHAT, Util.field_240973_b_); //sendMessage
+                    player.func_241151_a_(TextComponentHelper.createComponentTranslation(player, "commands.deathcounter.leaderboard.none"), ChatType.CHAT, Util.DUMMY_UUID); //sendMessage
                 }
                 else
                 {
@@ -177,7 +177,7 @@ public class DeathCounterCommand
                         {
                             if(done++ < count || s.equalsIgnoreCase(player.getName().getUnformattedComponentText()))
                             {
-                                player.func_241151_a_(setStyleForRank(new StringTextComponent((s.equalsIgnoreCase(player.getName().getUnformattedComponentText()) ? "-> " : "   ") + rank + " - " + s + " (" + e1.getKey() + ")"), rank), ChatType.CHAT, Util.field_240973_b_); //sendMessage
+                                player.func_241151_a_(setStyleForRank(new StringTextComponent((s.equalsIgnoreCase(player.getName().getUnformattedComponentText()) ? "-> " : "   ") + rank + " - " + s + " (" + e1.getKey() + ")"), rank), ChatType.CHAT, Util.DUMMY_UUID); //sendMessage
                             }
                         }
                         rank += e1.getValue().size();
@@ -191,9 +191,9 @@ public class DeathCounterCommand
     {
         switch(i)
         {
-            case 1: return text.func_240699_a_(TextFormatting.YELLOW);
-            case 2: return text.func_240699_a_(TextFormatting.GRAY);
-            case 3: return text.func_240699_a_(TextFormatting.DARK_RED);
+            case 1: return text.mergeStyle(TextFormatting.YELLOW);
+            case 2: return text.mergeStyle(TextFormatting.GRAY);
+            case 3: return text.mergeStyle(TextFormatting.DARK_RED);
             default: return text;
         }
     }
