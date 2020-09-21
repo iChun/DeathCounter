@@ -1,5 +1,6 @@
 modLoader="javafml"
-loaderVersion="[32,)" #forge version dep
+loaderVersion="[34,)" #forge version dep
+license="GNU Lesser General Public License v3.0"
 issueTrackerURL="https://github.com/iChun/Death-Counter/issues"
 
 [[mods]]
@@ -21,6 +22,6 @@ issueTrackerURL="https://github.com/iChun/Death-Counter/issues"
 [[dependencies.deathcounter]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.1,1.17)"
+    versionRange="[1.16.3,1.17)"
     ordering="NONE"
     side="BOTH"
