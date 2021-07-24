@@ -1,7 +1,7 @@
 package me.ichun.mods.deathcounter.api;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.Cancelable;
@@ -22,7 +22,7 @@ import net.minecraftforge.eventbus.api.Cancelable;
 public class AddPlayerDeathStatEvent extends PlayerEvent
 {
     private final DamageSource source;
-    public AddPlayerDeathStatEvent(PlayerEntity player, DamageSource source)
+    public AddPlayerDeathStatEvent(Player player, DamageSource source)
     {
         super(player);
         this.source = source;

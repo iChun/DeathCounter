@@ -8,11 +8,11 @@ import com.google.gson.reflect.TypeToken;
 import me.ichun.mods.deathcounter.api.AddPlayerDeathStatEvent;
 import me.ichun.mods.deathcounter.common.DeathCounter;
 import me.ichun.mods.deathcounter.common.command.DeathCounterCommand;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.Util;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.ChatType;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -20,8 +20,8 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
+import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
+import net.minecraftforge.fmlserverevents.FMLServerStoppingEvent;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -46,13 +46,13 @@ public class DeathHandler
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingDeathEvent(LivingDeathEvent event)
     {
-        if(!event.getEntityLiving().getEntityWorld().isRemote() &&
-                event.getEntityLiving() instanceof ServerPlayerEntity &&
-                !isFakePlayer((ServerPlayerEntity)event.getEntityLiving()) &&
-                !MinecraftForge.EVENT_BUS.post(new AddPlayerDeathStatEvent((ServerPlayerEntity)event.getEntityLiving(), event.getSource()))
+        if(!event.getEntityLiving().getCommandSenderWorld().isClientSide() &&
+                event.getEntityLiving() instanceof ServerPlayer &&
+                !isFakePlayer((ServerPlayer)event.getEntityLiving()) &&
+                !MinecraftForge.EVENT_BUS.post(new AddPlayerDeathStatEvent((ServerPlayer)event.getEntityLiving(), event.getSource()))
         )
         {
-            addDeath((ServerPlayerEntity)event.getEntityLiving());
+            addDeath((ServerPlayer)event.getEntityLiving());
         }
     }
 
@@ -62,7 +62,7 @@ public class DeathHandler
         MinecraftServer server = event.getServer();
         if(!DeathCounter.config.singleSession.get())
         {
-            currentDeathsFile = server.anvilConverterForAnvilFile.getWorldDir().resolve("deaths.json");
+            currentDeathsFile = server.storageSource.getWorldDir().resolve("deaths.json");
             try
             {
                 FileWatcher.defaultInstance().addWatch(currentDeathsFile, () -> {
@@ -107,23 +107,23 @@ public class DeathHandler
         ranking.clear();
     }
 
-    public static void addDeath(ServerPlayerEntity player)
+    public static void addDeath(ServerPlayer player)
     {
-        int playerDeaths = deaths.compute(player.getName().getUnformattedComponentText(), (k, v) -> v == null ? 1 : v + 1);
+        int playerDeaths = deaths.compute(player.getName().getContents(), (k, v) -> v == null ? 1 : v + 1);
         saveAndUpdateDeaths(); //this updates the rank as well.
-        int rank = getRank(player.getName().getUnformattedComponentText());
+        int rank = getRank(player.getName().getContents());
 
         switch(DeathCounter.config.messageType.get())
         {
             case SHORT:
             {
-                player.func_241151_a_(new TranslationTextComponent("message.deathcounter.deathAndRank", playerDeaths, rank), ChatType.CHAT, Util.DUMMY_UUID); //sendMessage
+                player.sendMessage(new TranslatableComponent("message.deathcounter.deathAndRank", playerDeaths, rank), ChatType.CHAT, Util.NIL_UUID); //sendMessage
                 break;
             }
             case LONG:
             {
-                player.func_241151_a_(new TranslationTextComponent("message.deathcounter.death", playerDeaths), ChatType.CHAT, Util.DUMMY_UUID); //sendMessage
-                player.func_241151_a_(new TranslationTextComponent("message.deathcounter.rank", rank), ChatType.CHAT, Util.DUMMY_UUID); //sendMessage
+                player.sendMessage(new TranslatableComponent("message.deathcounter.death", playerDeaths), ChatType.CHAT, Util.NIL_UUID); //sendMessage
+                player.sendMessage(new TranslatableComponent("message.deathcounter.rank", rank), ChatType.CHAT, Util.NIL_UUID); //sendMessage
                 break;
             }
             default:
@@ -136,9 +136,9 @@ public class DeathHandler
         return deaths.getOrDefault(name, 0);
     }
 
-    public static int getDeaths(ServerPlayerEntity player)
+    public static int getDeaths(ServerPlayer player)
     {
-        return getDeaths(player.getName().getUnformattedComponentText());
+        return getDeaths(player.getName().getContents());
     }
 
     public static void setDeaths(String name, int i)
@@ -283,7 +283,7 @@ public class DeathHandler
         return ranking;
     }
 
-    public static boolean isFakePlayer(ServerPlayerEntity player)
+    public static boolean isFakePlayer(ServerPlayer player)
     {
         return player instanceof FakePlayer || player.connection == null; // || player.getName().getUnformattedComponentText().toLowerCase().startsWith("fakeplayer") || player.getName().getUnformattedComponentText().toLowerCase().startsWith("[minecraft]");
     }
