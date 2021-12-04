@@ -1,6 +1,6 @@
 {
-   "pack":{
-      "pack_format":6,
-      "description":"Death Counter"
+   "pack": {
+      "description": "Death Counter",
+      "pack_format": 8
    }
 }
