@@ -21,7 +21,7 @@ import java.util.*;
 
 public class DeathCounterCommand
 {
-    private static final DynamicCommandExceptionType TRANSFER_FAIL = new DynamicCommandExceptionType((name) -> new TranslatableComponent("commands.deathcounter.transfer.fail", name));
+    private static final DynamicCommandExceptionType TRANSFER_FAIL = new DynamicCommandExceptionType((name) -> Component.translatable("commands.deathcounter.transfer.fail", name));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher)
     {
@@ -150,7 +150,7 @@ public class DeathCounterCommand
                     TreeSet<String> set = e.getValue();
                     for(String s : set)
                     {
-                        source.sendSuccess(setStyleForRank(new TextComponent("   " + rank + " - " + s + " (" + e.getKey() + ")"), rank), false); //setStyle
+                        source.sendSuccess(setStyleForRank(Component.literal("   " + rank + " - " + s + " (" + e.getKey() + ")"), rank), false); //setStyle
                         if(++done >= count) break;
                     }
                     if(done >= count) break;
@@ -162,10 +162,10 @@ public class DeathCounterCommand
         {
             entities.stream().filter(e->e instanceof ServerPlayer).forEach(e -> {
                 ServerPlayer player = (ServerPlayer)e;
-                player.sendMessage(TextComponentHelper.createComponentTranslation(player, "commands.deathcounter.leaderboard"), ChatType.CHAT, Util.NIL_UUID); //sendMessage
+                player.sendSystemMessage(TextComponentHelper.createComponentTranslation(player, "commands.deathcounter.leaderboard")); //sendSystemMessage
                 if(DeathHandler.getRankings().isEmpty())
                 {
-                    player.sendMessage(TextComponentHelper.createComponentTranslation(player, "commands.deathcounter.leaderboard.none"), ChatType.CHAT, Util.NIL_UUID); //sendMessage
+                    player.sendSystemMessage(TextComponentHelper.createComponentTranslation(player, "commands.deathcounter.leaderboard.none")); //sendSystemMessage
                 }
                 else
                 {
@@ -176,9 +176,9 @@ public class DeathCounterCommand
                         TreeSet<String> set = e1.getValue();
                         for(String s : set)
                         {
-                            if(done++ < count || s.equalsIgnoreCase(player.getName().getContents()))
+                            if(done++ < count || s.equalsIgnoreCase(player.getName().getString()))
                             {
-                                player.sendMessage(setStyleForRank(new TextComponent((s.equalsIgnoreCase(player.getName().getContents()) ? "-> " : "   ") + rank + " - " + s + " (" + e1.getKey() + ")"), rank), ChatType.CHAT, Util.NIL_UUID); //sendMessage
+                                player.sendSystemMessage(setStyleForRank(Component.literal((s.equalsIgnoreCase(player.getName().getString()) ? "-> " : "   ") + rank + " - " + s + " (" + e1.getKey() + ")"), rank)); //sendMessage
                             }
                         }
                         rank += e1.getValue().size();
@@ -188,7 +188,7 @@ public class DeathCounterCommand
         }
     }
 
-    private static Component setStyleForRank(BaseComponent text, int i)
+    private static Component setStyleForRank(MutableComponent text, int i)
     {
         switch(i)
         {

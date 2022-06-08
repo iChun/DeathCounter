@@ -8,9 +8,8 @@ import com.google.gson.reflect.TypeToken;
 import me.ichun.mods.deathcounter.api.AddPlayerDeathStatEvent;
 import me.ichun.mods.deathcounter.common.DeathCounter;
 import me.ichun.mods.deathcounter.common.command.DeathCounterCommand;
-import net.minecraft.Util;
 import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
@@ -109,21 +108,21 @@ public class DeathHandler
 
     public static void addDeath(ServerPlayer player)
     {
-        int playerDeaths = deaths.compute(player.getName().getContents(), (k, v) -> v == null ? 1 : v + 1);
+        int playerDeaths = deaths.compute(player.getName().getString(), (k, v) -> v == null ? 1 : v + 1);
         saveAndUpdateDeaths(); //this updates the rank as well.
-        int rank = getRank(player.getName().getContents());
+        int rank = getRank(player.getName().getString());
 
         switch(DeathCounter.config.messageType.get())
         {
             case SHORT:
             {
-                player.sendMessage(new TranslatableComponent("message.deathcounter.deathAndRank", playerDeaths, rank), ChatType.CHAT, Util.NIL_UUID); //sendMessage
+                player.sendSystemMessage(Component.translatable("message.deathcounter.deathAndRank", playerDeaths, rank)); //sendMessage
                 break;
             }
             case LONG:
             {
-                player.sendMessage(new TranslatableComponent("message.deathcounter.death", playerDeaths), ChatType.CHAT, Util.NIL_UUID); //sendMessage
-                player.sendMessage(new TranslatableComponent("message.deathcounter.rank", rank), ChatType.CHAT, Util.NIL_UUID); //sendMessage
+                player.sendSystemMessage(Component.translatable("message.deathcounter.death", playerDeaths), ChatType.CHAT); //sendMessage
+                player.sendSystemMessage(Component.translatable("message.deathcounter.rank", rank), ChatType.CHAT); //sendMessage
                 break;
             }
             default:
@@ -138,7 +137,7 @@ public class DeathHandler
 
     public static int getDeaths(ServerPlayer player)
     {
-        return getDeaths(player.getName().getContents());
+        return getDeaths(player.getName().getString());
     }
 
     public static void setDeaths(String name, int i)
