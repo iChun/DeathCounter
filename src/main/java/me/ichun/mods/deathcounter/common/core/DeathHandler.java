@@ -45,13 +45,13 @@ public class DeathHandler
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingDeathEvent(LivingDeathEvent event)
     {
-        if(!event.getEntityLiving().getCommandSenderWorld().isClientSide() &&
-                event.getEntityLiving() instanceof ServerPlayer &&
-                !isFakePlayer((ServerPlayer)event.getEntityLiving()) &&
-                !MinecraftForge.EVENT_BUS.post(new AddPlayerDeathStatEvent((ServerPlayer)event.getEntityLiving(), event.getSource()))
+        if(!event.getEntity().getCommandSenderWorld().isClientSide() &&
+                event.getEntity() instanceof ServerPlayer &&
+                !isFakePlayer((ServerPlayer)event.getEntity()) &&
+                !MinecraftForge.EVENT_BUS.post(new AddPlayerDeathStatEvent((ServerPlayer)event.getEntity(), event.getSource()))
         )
         {
-            addDeath((ServerPlayer)event.getEntityLiving());
+            addDeath((ServerPlayer)event.getEntity());
         }
     }
 
@@ -121,8 +121,8 @@ public class DeathHandler
             }
             case LONG:
             {
-                player.sendSystemMessage(Component.translatable("message.deathcounter.death", playerDeaths), ChatType.CHAT); //sendMessage
-                player.sendSystemMessage(Component.translatable("message.deathcounter.rank", rank), ChatType.CHAT); //sendMessage
+                player.sendSystemMessage(Component.translatable("message.deathcounter.death", playerDeaths)); //sendMessage
+                player.sendSystemMessage(Component.translatable("message.deathcounter.rank", rank)); //sendMessage
                 break;
             }
             default:
