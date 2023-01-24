@@ -1,111 +1,110 @@
 package me.ichun.mods.deathcounter.common.core;
 
-import com.electronwill.nightconfig.core.file.FileWatcher;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import me.ichun.mods.deathcounter.api.AddPlayerDeathStatEvent;
+import com.mojang.brigadier.CommandDispatcher;
 import me.ichun.mods.deathcounter.common.DeathCounter;
 import me.ichun.mods.deathcounter.common.command.DeathCounterCommand;
+import me.ichun.mods.deathcounter.mixin.LevelStorageAccessAccessorMixin;
+import me.ichun.mods.deathcounter.mixin.MinecraftServerAccessorMixin;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
-@Mod.EventBusSubscriber(modid = DeathCounter.MOD_ID)
-public class DeathHandler
+public abstract class DeathHandler
 {
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private static TreeMap<String, Integer> deaths = new TreeMap<>(Comparator.naturalOrder());
-    private static TreeMap<Integer, TreeSet<String>> ranking = new TreeMap<>(Comparator.reverseOrder());
-    private static Path currentDeathsFile = null;
-    private static long timestamp = 0L;
-    private static boolean writing = false;
+    private static final Map<Path, WatchServiceThread> WATCH_SERVICES = Collections.synchronizedMap(new HashMap<>()); //Taken from iChunUtil, thanks past iChun!
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private TreeMap<String, Integer> deaths = new TreeMap<>(Comparator.naturalOrder());
+    private TreeMap<Integer, TreeSet<String>> ranking = new TreeMap<>(Comparator.reverseOrder());
+    private Path currentDeathsFile = null;
+    private long timestamp = 0L;
+    private boolean writing = false;
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onLivingDeathEvent(LivingDeathEvent event)
+    public void onLivingDeath(LivingEntity living, DamageSource source)
     {
-        if(!event.getEntity().getCommandSenderWorld().isClientSide() &&
-                event.getEntity() instanceof ServerPlayer &&
-                !isFakePlayer((ServerPlayer)event.getEntity()) &&
-                !MinecraftForge.EVENT_BUS.post(new AddPlayerDeathStatEvent((ServerPlayer)event.getEntity(), event.getSource()))
+        if(!living.getCommandSenderWorld().isClientSide() &&
+                living instanceof ServerPlayer &&
+                !isFakePlayer((ServerPlayer)living) &&
+                !postAddPlayerDeathStatEvent((ServerPlayer)living, source)
         )
         {
-            addDeath((ServerPlayer)event.getEntity());
+            addDeath((ServerPlayer)living);
         }
     }
 
-    @SubscribeEvent
-    public static void onServerAboutToStartEvent(ServerStartingEvent event)
+    public void onServerAboutToStart(MinecraftServer server)
     {
-        MinecraftServer server = event.getServer();
         if(!DeathCounter.config.singleSession.get())
         {
-            currentDeathsFile = server.storageSource.getWorldDir().resolve("deaths.json");
-            try
+            Path worldSavePath = ((LevelStorageAccessAccessorMixin)((MinecraftServerAccessorMixin)server).getStorageSource()).getLevelDirectory().path();
+            currentDeathsFile = worldSavePath.resolve("deaths.json");
+            synchronized(WATCH_SERVICES)
             {
-                FileWatcher.defaultInstance().addWatch(currentDeathsFile, () -> {
-                    long lastChange = 0L;
-                    try
-                    {
-                        lastChange = Files.getLastModifiedTime(currentDeathsFile).toMillis();
-                    }
-                    catch(IOException ignored)
-                    {
-                    }
-                    if(currentDeathsFile != null && !DeathCounter.config.singleSession.get() && !writing && timestamp != lastChange)
-                    {
-                        server.execute(DeathHandler::loadDeaths);
-                    }
+                WatchServiceThread watchServiceThread = WATCH_SERVICES.computeIfAbsent(currentDeathsFile.getParent(), k -> {
+                    WatchServiceThread thread = new WatchServiceThread(currentDeathsFile.getParent(), fileName -> {
+                        long lastChange = 0L;
+                        try
+                        {
+                            lastChange = Files.getLastModifiedTime(currentDeathsFile).toMillis();
+                        }
+                        catch(IOException ignored)
+                        {
+                        }
+                        if(currentDeathsFile != null && !DeathCounter.config.singleSession.get() && !writing && timestamp != lastChange)
+                        {
+                            server.execute(this::loadDeaths);
+                        }
+                    });
+                    thread.start();
+                    return thread;
                 });
-            }
-            catch(IOException e)
-            {
-                DeathCounter.LOGGER.error("Error listening to deaths.json: " + currentDeathsFile.toString());
-                e.printStackTrace();
+                watchServiceThread.addFileToWatch("deaths.json");
             }
             loadDeaths();
         }
     }
 
-    @SubscribeEvent
-    public static void onRegisterCommands(RegisterCommandsEvent event)
+    public void onRegisterCommands(CommandDispatcher<CommandSourceStack> dispatcher)
     {
-        DeathCounterCommand.register(event.getDispatcher());
+        DeathCounterCommand.register(dispatcher);
     }
 
-    @SubscribeEvent
-    public static void onServerStoppingEvent(ServerStoppingEvent event)
+    public void onServerStopping()
     {
         if(currentDeathsFile != null)
         {
-            FileWatcher.defaultInstance().removeWatch(currentDeathsFile);
+            terminateWatchServices();
         }
         currentDeathsFile = null;
         deaths.clear();
         ranking.clear();
     }
 
-    public static void addDeath(ServerPlayer player)
+    private static void terminateWatchServices()
+    {
+        synchronized(WATCH_SERVICES)
+        {
+            WATCH_SERVICES.forEach((k, v) -> v.stopThread());
+            WATCH_SERVICES.clear();
+        }
+    }
+
+    public abstract boolean postAddPlayerDeathStatEvent(ServerPlayer player, DamageSource source); //Return true = do not add death
+
+    public void addDeath(ServerPlayer player)
     {
         int playerDeaths = deaths.compute(player.getName().getString(), (k, v) -> v == null ? 1 : v + 1);
         saveAndUpdateDeaths(); //this updates the rank as well.
@@ -129,19 +128,19 @@ public class DeathHandler
         }
     }
 
-    public static int getDeaths(String name)
+    public int getDeaths(String name)
     {
         return deaths.getOrDefault(name, 0);
     }
 
-    public static int getDeaths(ServerPlayer player)
+    public int getDeaths(ServerPlayer player)
     {
         return getDeaths(player.getName().getString());
     }
 
-    public static void setDeaths(String name, int i)
+    public void setDeaths(String name, int i)
     {
-        if("all".equals(name.toLowerCase()))
+        if("all".equalsIgnoreCase(name))
         {
             if(i <= 0)
             {
@@ -168,7 +167,7 @@ public class DeathHandler
         saveAndUpdateDeaths();
     }
 
-    public static int transferDeaths(String from, String to)
+    public int transferDeaths(String from, String to)
     {
         if(from == null || to == null || from.isEmpty() || to.isEmpty() || !deaths.containsKey(from))
         {
@@ -180,7 +179,7 @@ public class DeathHandler
         return deaths.get(to);
     }
 
-    public static void saveAndUpdateDeaths()
+    public void saveAndUpdateDeaths()
     {
         if(currentDeathsFile == null)
         {
@@ -211,7 +210,7 @@ public class DeathHandler
         calculateRank();
     }
 
-    public static void loadDeaths()
+    public void loadDeaths()
     {
         if(DeathCounter.config.singleSession.get()) //single session. don't load deaths.
         {
@@ -252,7 +251,7 @@ public class DeathHandler
         calculateRank();
     }
 
-    public static void calculateRank()
+    public void calculateRank()
     {
         ranking.clear();
         for(Map.Entry<String, Integer> e : deaths.entrySet())
@@ -262,7 +261,7 @@ public class DeathHandler
         }
     }
 
-    public static int getRank(String name)
+    public int getRank(String name)
     {
         int rank = 1;
         for(Map.Entry<Integer, TreeSet<String>> e : ranking.entrySet())
@@ -276,13 +275,10 @@ public class DeathHandler
         return -1;
     }
 
-    public static TreeMap<Integer, TreeSet<String>> getRankings()
+    public TreeMap<Integer, TreeSet<String>> getRankings()
     {
         return ranking;
     }
 
-    public static boolean isFakePlayer(ServerPlayer player)
-    {
-        return player instanceof FakePlayer || player.connection == null; // || player.getName().getUnformattedComponentText().toLowerCase().startsWith("fakeplayer") || player.getName().getUnformattedComponentText().toLowerCase().startsWith("[minecraft]");
-    }
+    public abstract boolean isFakePlayer(ServerPlayer player);
 }
