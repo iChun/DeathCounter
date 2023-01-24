@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "me.ichun.mods.deathcounter.mixin",
   "compatibilityLevel": "JAVA_17",
+  "refmap": "deathcounter.refmap.json",
   "mixins": [
     "LevelStorageAccessAccessorMixin",
     "MinecraftServerAccessorMixin"
