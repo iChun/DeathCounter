@@ -30,9 +30,7 @@ public class DeathCounterCommand
                             Entity ent = source.getSource().getEntity();
                             if(ent != null)
                             {
-                                ArrayList<Entity> ents = new ArrayList<>();
-                                ents.add(ent);
-                                broadcastLeaderboard(ents, null, DeathCounter.config.leaderboardCount.get());
+                                broadcastLeaderboard(Collections.singleton(ent), null, DeathCounter.config.leaderboardCount.get());
                             }
                             else
                             {
@@ -139,7 +137,7 @@ public class DeathCounterCommand
                     TreeSet<String> set = e.getValue();
                     for(String s : set)
                     {
-                        source.sendSuccess(setStyleForRank(Component.literal("   " + rank + " - " + s + " (" + e.getKey() + ")"), rank), false); //setStyle
+                        source.sendSuccess(setStyleForRank(Component.translatable("commands.deathcounter.leaderboard.copy", "   " + rank + " - " + s + " (" + e.getKey() + ")"), rank), false); //setStyle
                         if(++done >= count) break;
                     }
                     if(done >= count) break;
@@ -167,7 +165,7 @@ public class DeathCounterCommand
                         {
                             if(done++ < count || s.equalsIgnoreCase(player.getName().getString()))
                             {
-                                player.sendSystemMessage(setStyleForRank(Component.literal((s.equalsIgnoreCase(player.getName().getString()) ? "-> " : "   ") + rank + " - " + s + " (" + e1.getKey() + ")"), rank)); //sendMessage
+                                player.sendSystemMessage(setStyleForRank(Component.translatable("commands.deathcounter.leaderboard.copy", (s.equalsIgnoreCase(player.getName().getString()) ? "-> " : "   ") + rank + " - " + s + " (" + e1.getKey() + ")"), rank)); //sendMessage
                             }
                         }
                         rank += e1.getValue().size();

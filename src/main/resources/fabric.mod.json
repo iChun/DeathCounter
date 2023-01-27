@@ -19,6 +19,9 @@
   "entrypoints": {
     "main": [
       "me.ichun.mods.deathcounter.loader.fabric.LoaderFabric"
+    ],
+    "client": [
+      "me.ichun.mods.deathcounter.loader.fabric.client.LoaderClientFabric"
     ]
   },
 

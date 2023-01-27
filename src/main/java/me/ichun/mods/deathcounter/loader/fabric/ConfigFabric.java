@@ -15,6 +15,7 @@ public class ConfigFabric extends Config
     public ConfigFabric()
     {
         messageType = new ConfigWrapper<>(() -> GENERAL.messageType, v -> GENERAL.messageType = v);
+        broadcastOnDeath = new ConfigWrapper<>(() -> GENERAL.broadcastOnDeath, v -> GENERAL.broadcastOnDeath = v);
         leaderboardCount = new ConfigWrapper<>(() -> GENERAL.leaderboardCount, v -> GENERAL.leaderboardCount = v);
         singleSession = new ConfigWrapper<>(() -> GENERAL.singleSession, v -> GENERAL.singleSession = v);
         commandPermissionLevel = new ConfigWrapper<>(() -> GENERAL.commandPermissionLevel, v -> GENERAL.commandPermissionLevel = v);
@@ -35,8 +36,11 @@ public class ConfigFabric extends Config
             return "General configs that don't fit any other category.";
         }
 
-        @ConfigEntry(nameKey = "config.deathcounter.prop.messageType.name", descriptionKey = "config.deathcounter.prop.messageType.desc", comment = "What kind of message should we send players when they die?")
+        @ConfigEntry(nameKey = "config.deathcounter.prop.messageType.name", descriptionKey = "config.deathcounter.prop.messageType.desc", comment = "What kind of message should we send players when they die?\nAccepts: NONE, SHORT, LONG")
         public DeathCounter.MessageType messageType = DeathCounter.MessageType.LONG;
+
+        @ConfigEntry(nameKey = "config.deathcounter.prop.broadcastOnDeath.name", descriptionKey = "config.deathcounter.prop.broadcastOnDeath.desc", comment = "Should we broadcast the leaderboard to the player when they die?\nAccepts: NONE, SELF, ALL")
+        public DeathCounter.BroadcastType broadcastOnDeath = DeathCounter.BroadcastType.NONE;
 
         @ConfigEntry(nameKey = "config.deathcounter.prop.leaderboardCount.name", descriptionKey = "config.deathcounter.prop.leaderboardCount.desc", comment = "Number of names to show in the leaderboard")
         @ConfigEntry.BoundedInteger(min = 1, max = 50)

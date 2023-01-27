@@ -10,10 +10,15 @@ public class ConfigForge extends Config
     {
         builder.comment("General settings").push("general");
 
-        final ForgeConfigSpec.EnumValue<DeathCounter.MessageType> cMessageType = builder.comment("What kind of message should we send players when they die?")
+        final ForgeConfigSpec.EnumValue<DeathCounter.MessageType> cMessageType = builder.comment("What kind of message should we send players when they die?\nAccepts: NONE, SHORT, LONG")
                 .translation("config.deathcounter.prop.messageType.desc")
                 .defineEnum("messageType", DeathCounter.MessageType.LONG);
         messageType = new ConfigWrapper<>(cMessageType::get, cMessageType::set, cMessageType::save);
+
+        final ForgeConfigSpec.EnumValue<DeathCounter.BroadcastType> cBroadcastOnDeath = builder.comment("Should we broadcast the leaderboard to the player when they die?\nAccepts: NONE, SELF, ALL")
+                .translation("config.deathcounter.prop.broadcastOnDeath.desc")
+                .defineEnum("broadcastOnDeath", DeathCounter.BroadcastType.NONE);
+        broadcastOnDeath = new ConfigWrapper<>(cBroadcastOnDeath::get, cBroadcastOnDeath::set, cBroadcastOnDeath::save);
 
         final ForgeConfigSpec.IntValue cLeaderboardCount = builder.comment("Number of names to show in the leaderboard")
                 .translation("config.deathcounter.prop.leaderboardCount.desc")

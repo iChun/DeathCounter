@@ -15,7 +15,7 @@ public class LoaderFabric extends DeathCounter
         //register config
         ConfigFabric configFabric = new ConfigFabric();
         config = configFabric;
-        Config modConfig = new Config(MOD_ID, new String[]{}, configFabric);
+        Config modConfig = new Config(MOD_ID, new String[]{ DeathCounter.MOD_ID }, configFabric);
         modConfig.load();
         Runtime.getRuntime().addShutdownHook(new Thread(modConfig::save));
 

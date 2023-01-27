@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 public abstract class Config
 {
     public ConfigWrapper<DeathCounter.MessageType> messageType;
+    public ConfigWrapper<DeathCounter.BroadcastType> broadcastOnDeath;
     public ConfigWrapper<Integer> leaderboardCount;
     public ConfigWrapper<Boolean> singleSession;
     public ConfigWrapper<Integer> commandPermissionLevel;

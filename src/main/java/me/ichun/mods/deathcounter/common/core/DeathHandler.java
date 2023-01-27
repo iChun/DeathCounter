@@ -11,6 +11,8 @@ import me.ichun.mods.deathcounter.mixin.LevelStorageAccessAccessorMixin;
 import me.ichun.mods.deathcounter.mixin.MinecraftServerAccessorMixin;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -93,6 +95,15 @@ public abstract class DeathHandler
         ranking.clear();
     }
 
+    /**
+     * @param message message from server
+     * @return true if the message is ours
+     */
+    public boolean isMessageOurs(Component message)
+    {
+        return message instanceof MutableComponent && message.getContents() instanceof TranslatableContents && (((TranslatableContents)message.getContents()).getKey().startsWith("message.deathcounter.") || ((TranslatableContents)message.getContents()).getKey().startsWith("commands.deathcounter.leaderboard"));
+    }
+
     private static void terminateWatchServices()
     {
         synchronized(WATCH_SERVICES)
@@ -112,19 +123,20 @@ public abstract class DeathHandler
 
         switch(DeathCounter.config.messageType.get())
         {
-            case SHORT:
-            {
-                player.sendSystemMessage(Component.translatable("message.deathcounter.deathAndRank", playerDeaths, rank)); //sendMessage
-                break;
-            }
-            case LONG:
+            case SHORT -> player.sendSystemMessage(Component.translatable("message.deathcounter.deathAndRank", playerDeaths, rank)); //sendMessage
+            case LONG ->
             {
                 player.sendSystemMessage(Component.translatable("message.deathcounter.death", playerDeaths), false); //sendMessage
                 player.sendSystemMessage(Component.translatable("message.deathcounter.rank", rank), false); //sendMessage
-                break;
             }
-            default:
-            case NONE:
+            case NONE -> {}
+        }
+
+        switch(DeathCounter.config.broadcastOnDeath.get())
+        {
+            case SELF -> DeathCounterCommand.broadcastLeaderboard(Collections.singleton(player), null, DeathCounter.config.leaderboardCount.get());
+            case ALL -> DeathCounterCommand.broadcastLeaderboard(player.getServer().getPlayerList().getPlayers(), null,DeathCounter.config.leaderboardCount.get());
+            case NONE -> {}
         }
     }
 
