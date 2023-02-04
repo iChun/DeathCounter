@@ -115,3 +115,14 @@ publishing {
 		// retrieving dependencies.
 	}
 }
+
+task apiJar(type: Jar) {
+    classifier = "api"
+    from(sourceSets.main.output) {
+        include "me/ichun/mods/${project.mod_id}/api/**"
+    }
+}
+
+artifacts {
+    archives apiJar
+}

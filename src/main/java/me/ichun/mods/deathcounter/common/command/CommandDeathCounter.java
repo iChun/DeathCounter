@@ -18,7 +18,7 @@ import net.minecraft.world.entity.Entity;
 
 import java.util.*;
 
-public class DeathCounterCommand
+public class CommandDeathCounter
 {
     private static final DynamicCommandExceptionType TRANSFER_FAIL = new DynamicCommandExceptionType((name) -> Component.translatable("commands.deathcounter.transfer.fail", name));
 

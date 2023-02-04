@@ -6,7 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.brigadier.CommandDispatcher;
 import me.ichun.mods.deathcounter.common.DeathCounter;
-import me.ichun.mods.deathcounter.common.command.DeathCounterCommand;
+import me.ichun.mods.deathcounter.common.command.CommandDeathCounter;
 import me.ichun.mods.deathcounter.mixin.LevelStorageAccessAccessorMixin;
 import me.ichun.mods.deathcounter.mixin.MinecraftServerAccessorMixin;
 import net.minecraft.commands.CommandSourceStack;
@@ -81,7 +81,7 @@ public abstract class DeathHandler
 
     public void onRegisterCommands(CommandDispatcher<CommandSourceStack> dispatcher)
     {
-        DeathCounterCommand.register(dispatcher);
+        CommandDeathCounter.register(dispatcher);
     }
 
     public void onServerStopping()
@@ -134,8 +134,8 @@ public abstract class DeathHandler
 
         switch(DeathCounter.config.broadcastOnDeath.get())
         {
-            case SELF -> DeathCounterCommand.broadcastLeaderboard(Collections.singleton(player), null, DeathCounter.config.leaderboardCount.get());
-            case ALL -> DeathCounterCommand.broadcastLeaderboard(player.getServer().getPlayerList().getPlayers(), null,DeathCounter.config.leaderboardCount.get());
+            case SELF -> CommandDeathCounter.broadcastLeaderboard(Collections.singleton(player), null, DeathCounter.config.leaderboardCount.get());
+            case ALL -> CommandDeathCounter.broadcastLeaderboard(player.getServer().getPlayerList().getPlayers(), null,DeathCounter.config.leaderboardCount.get());
             case NONE -> {}
         }
     }

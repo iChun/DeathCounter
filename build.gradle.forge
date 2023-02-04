@@ -180,7 +180,7 @@ jar {
         attributes([
                 "Specification-Title"     : "${project.mod_id}",
                 "Specification-Vendor"    : "iChun",
-                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Specification-Version"   : "${project.mod_version}",
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
                 "Implementation-Vendor"   : "iChun",
@@ -211,4 +211,15 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+task apiJar(type: Jar) {
+    classifier = "api"
+    from(sourceSets.main.output) {
+        include "me/ichun/mods/${project.mod_id}/api/**"
+    }
+}
+
+artifacts {
+    archives apiJar
 }
