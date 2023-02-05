@@ -22,6 +22,6 @@ issueTrackerURL="https://github.com/iChun/Death-Counter/issues"
 [[dependencies.deathcounter]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.2,1.20)"
+    versionRange="[1.19,1.19.3)"
     ordering="NONE"
     side="BOTH"

@@ -1,4 +1,4 @@
-package me.ichun.mods.deathcounter.api;
+package me.ichun.mods.deathcounter.api.forge;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;

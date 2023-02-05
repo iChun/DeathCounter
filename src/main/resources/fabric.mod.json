@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "deathcounter",
+  "version": "${version}",
+
+  "name": "Death Counter",
+  "description": "Simple death counter for servers.",
+  "authors": [
+    "iChun"
+  ],
+  "contact": {
+    "homepage": "https://github.com/iChun/Death-Counter",
+    "issues": "https://github.com/iChun/Death-Counter/issues"
+  },
+
+  "license": "GNU Lesser General Public License v3.0",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.ichun.mods.deathcounter.loader.fabric.LoaderFabric"
+    ],
+    "client": [
+      "me.ichun.mods.deathcounter.loader.fabric.client.LoaderClientFabric"
+    ]
+  },
+
+  "mixins": [
+    "deathcounter.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.11",
+    "fabric-api": "*",
+    "minecraft": ">=1.19 <=1.19.2",
+    "java": ">=17",
+    "completeconfig-base": ">=2.1.0"
+  }
+}
