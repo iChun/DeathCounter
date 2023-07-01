@@ -120,7 +120,7 @@ publishing {
 }
 
 task apiJar(type: Jar) {
-    classifier = "api"
+    archiveClassifier = "api"
     from(sourceSets.main.output) {
         include "me/ichun/mods/${project.mod_id}/api/**"
     }
