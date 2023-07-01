@@ -16,7 +16,10 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.TreeSet;
 
 public class CommandDeathCounter
 {
@@ -47,11 +50,11 @@ public class CommandDeathCounter
                                             int rank = DeathCounter.deathHandler.getRank(name);
                                             if(deaths > 0)
                                             {
-                                                source.getSource().sendSuccess(Component.translatable("commands.deathcounter.get", name, deaths, rank), false);
+                                                source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.get", name, deaths, rank), false);
                                             }
                                             else
                                             {
-                                                source.getSource().sendSuccess(Component.translatable("commands.deathcounter.get.none", name), false);
+                                                source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.get.none", name), false);
                                             }
                                             return 0;
                                         })))
@@ -67,28 +70,28 @@ public class CommandDeathCounter
                         .then(Commands.literal("broadcast").requires((p) -> p.hasPermission(DeathCounter.config.commandPermissionLevel.get()))
                                 .executes((source) -> {
                                     //send to all
-                                    source.getSource().sendSuccess(Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
+                                    source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
                                     broadcastLeaderboard(source.getSource().getServer().getPlayerList().getPlayers(), null, DeathCounter.config.leaderboardCount.get());
                                     return 0;
                                 })
                                 .then(Commands.argument("targets", EntityArgument.players())
                                         .executes((source) -> {
                                             //send to specific
-                                            source.getSource().sendSuccess(Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
+                                            source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
                                             broadcastLeaderboard(EntityArgument.getPlayers(source, "targets"), null, DeathCounter.config.leaderboardCount.get());
                                             return 0;
                                         })
                                         .then(Commands.argument("count", IntegerArgumentType.integer(1))
                                                 .executes((source) -> {
                                                     //broadcast specific count
-                                                    source.getSource().sendSuccess(Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
+                                                    source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
                                                     broadcastLeaderboard(EntityArgument.getPlayers(source, "targets"), null, IntegerArgumentType.getInteger(source, "count"));
                                                     return 0;
                                                 })))
                                 .then(Commands.argument("count", IntegerArgumentType.integer(1))
                                         .executes((source) -> {
                                             //broadcast specific count
-                                            source.getSource().sendSuccess(Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
+                                            source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
                                             broadcastLeaderboard(source.getSource().getServer().getPlayerList().getPlayers(), null, IntegerArgumentType.getInteger(source, "count"));
                                             return 0;
                                         })))
@@ -104,7 +107,7 @@ public class CommandDeathCounter
                                                     int deaths = DeathCounter.deathHandler.transferDeaths(from, to);
                                                     if(deaths > 0)
                                                     {
-                                                        source.getSource().sendSuccess(Component.translatable("commands.deathcounter.transfer", deaths, from, to), true);
+                                                        source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.transfer", deaths, from, to), true);
                                                     }
                                                     else
                                                     {
@@ -123,10 +126,10 @@ public class CommandDeathCounter
     {
         if(source != null) //query from server
         {
-            source.sendSuccess(Component.translatable("commands.deathcounter.leaderboard"), false);
+            source.sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard"), false);
             if(DeathCounter.deathHandler.getRankings().isEmpty())
             {
-                source.sendSuccess(Component.translatable("commands.deathcounter.leaderboard.none"), false);
+                source.sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.none"), false);
             }
             else
             {
@@ -137,7 +140,8 @@ public class CommandDeathCounter
                     TreeSet<String> set = e.getValue();
                     for(String s : set)
                     {
-                        source.sendSuccess(setStyleForRank(Component.translatable("commands.deathcounter.leaderboard.copy", "   " + rank + " - " + s + " (" + e.getKey() + ")"), rank), false); //setStyle
+                        int finalRank = rank;
+                        source.sendSuccess(() -> setStyleForRank(Component.translatable("commands.deathcounter.leaderboard.copy", "   " + finalRank + " - " + s + " (" + e.getKey() + ")"), finalRank), false); //setStyle
                         if(++done >= count) break;
                     }
                     if(done >= count) break;

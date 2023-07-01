@@ -13,8 +13,8 @@ public class LoaderClientFabric
         //register config
         ConfigClientFabric configClientFabric = new ConfigClientFabric();
         DeathCounter.configClient = configClientFabric;
-        Config modConfig = new Config(DeathCounter.MOD_ID, new String[]{ DeathCounter.MOD_ID + "-client"}, configClientFabric);
-        modConfig.load();
-        Runtime.getRuntime().addShutdownHook(new Thread(modConfig::save));
+        configClientFabric.configInstance = new Config(DeathCounter.MOD_ID, new String[]{ DeathCounter.MOD_ID + "-client"}, configClientFabric);
+        configClientFabric.configInstance.load();
+        Runtime.getRuntime().addShutdownHook(new Thread(configClientFabric.configInstance::save));
     }
 }

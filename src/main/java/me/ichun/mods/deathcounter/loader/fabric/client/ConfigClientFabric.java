@@ -12,6 +12,8 @@ public class ConfigClientFabric extends ConfigClient
 {
     public static General GENERAL = null;
 
+    public me.lortseam.completeconfig.data.Config configInstance; // the config screen builder from completeconfig does not support multiple configs, modmenu doesn't handle multiple entrypoints properly.
+
     public ConfigClientFabric()
     {
         hideDeathCounterMessages = new Config.ConfigWrapper<>(() -> GENERAL.hideDeathCounterMessages, v -> GENERAL.hideDeathCounterMessages = v);
@@ -32,7 +34,7 @@ public class ConfigClientFabric extends ConfigClient
             return "General configs that don't fit any other category.";
         }
 
-        @ConfigEntry(nameKey = "config.deathcounter.prop.hideDeathCounterMessages.name", descriptionKey = "config.deathcounter.prop.hideDeathCounterMessages.desc", comment = "Enable this and death counter messages will not show up in chat.")
+        @ConfigEntry(nameKey = "prop.hideDeathCounterMessages.name", descriptionKey = "prop.hideDeathCounterMessages.desc", comment = "Enable this and death counter messages will not show up in chat.")
         public boolean hideDeathCounterMessages = false;
     }
 }
