@@ -1,0 +1,31 @@
+modLoader="javafml"
+loaderVersion="${neoforge_loader_version_range}" #neoforge version dep
+license="${mod_license}"
+issueTrackerURL="https://github.com/iChun/Death-Counter/issues"
+
+[[mods]]
+    modId="${mod_id}"
+    version="${mod_version}" #mandatory
+    displayName="${mod_name}"
+    displayURL="https://ichun.me/mods/death-counter/"
+    logoFile="icon.png"
+    authors="iChun"
+    description='''
+    Simple death counter for servers.
+    '''
+
+[[mixins]]
+    config="${mod_id}.mixins.json"
+
+[[dependencies.${mod_id}]]
+    modId="neoforge"
+    type="required"
+    versionRange="${neoforge_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"

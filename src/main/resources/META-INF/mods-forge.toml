@@ -1,27 +1,28 @@
 modLoader="javafml"
-loaderVersion="[48,)" #forge version dep
-license="GNU Lesser General Public License v3.0"
+loaderVersion="${forge_loader_version_range}" #forge version dep
+license="${mod_license}"
 issueTrackerURL="https://github.com/iChun/Death-Counter/issues"
 
 [[mods]]
-    modId="deathcounter"
-    version="${file.jarVersion}" #mandatory
-    displayName="Death Counter"
+    modId="${mod_id}"
+    version="${mod_version}" #mandatory
+    displayName="${mod_name}"
     displayURL="https://ichun.me/mods/death-counter/"
+    logoFile="icon.png"
     authors="iChun"
     description='''
     Simple death counter for servers.
     '''
 
-[[dependencies.deathcounter]]
+[[dependencies.${mod_id}]]
     modId="forge"
     mandatory=true
-    versionRange="[48,)"
+    versionRange="${forge_version_range}"
     ordering="NONE"
     side="BOTH"
-[[dependencies.deathcounter]]
+[[dependencies.${mod_id}]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.20.2,1.21)"
+    versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"

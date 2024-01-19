@@ -34,7 +34,7 @@ public class ConfigClientFabric extends ConfigClient
             return "General configs that don't fit any other category.";
         }
 
-        @ConfigEntry(nameKey = "prop.hideDeathCounterMessages.name", descriptionKey = "prop.hideDeathCounterMessages.desc", comment = "Enable this and death counter messages will not show up in chat.")
+        @ConfigEntry(nameKey = "prop.hideDeathCounterMessages.name", descriptionKey = "prop.hideDeathCounterMessages.desc", comment = Reference.HIDE_DEATH_COUNTER_MESSAGES_COMMENT)
         public boolean hideDeathCounterMessages = false;
     }
 }

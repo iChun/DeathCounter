@@ -36,20 +36,20 @@ public class ConfigFabric extends Config
             return "General configs that don't fit any other category.";
         }
 
-        @ConfigEntry(nameKey = "prop.messageType.name", descriptionKey = "prop.messageType.desc", comment = "What kind of message should we send players when they die?\nAccepts: NONE, SHORT, LONG")
+        @ConfigEntry(nameKey = "prop.messageType.name", descriptionKey = "prop.messageType.desc", comment = Reference.MESSAGE_TYPE_COMMENT)
         public DeathCounter.MessageType messageType = DeathCounter.MessageType.LONG;
 
-        @ConfigEntry(nameKey = "prop.broadcastOnDeath.name", descriptionKey = "prop.broadcastOnDeath.desc", comment = "Should we broadcast the leaderboard to the player when they die?\nAccepts: NONE, SELF, ALL")
+        @ConfigEntry(nameKey = "prop.broadcastOnDeath.name", descriptionKey = "prop.broadcastOnDeath.desc", comment = Reference.BROADCAST_ON_DEATH_COMMENT)
         public DeathCounter.BroadcastType broadcastOnDeath = DeathCounter.BroadcastType.NONE;
 
-        @ConfigEntry(nameKey = "prop.leaderboardCount.name", descriptionKey = "prop.leaderboardCount.desc", comment = "Number of names to show in the leaderboard")
+        @ConfigEntry(nameKey = "prop.leaderboardCount.name", descriptionKey = "prop.leaderboardCount.desc", comment = Reference.LEADERBOARD_COUNT_COMMENT)
         @ConfigEntry.BoundedInteger(min = 1, max = 50)
         public int leaderboardCount = 5;
 
-        @ConfigEntry(nameKey = "prop.singleSession.name", descriptionKey = "prop.singleSession.desc", comment = "Do not persist deaths across sessions? Turning this on disables saving deaths to server folder.")
+        @ConfigEntry(nameKey = "prop.singleSession.name", descriptionKey = "prop.singleSession.desc", comment = Reference.SINGLE_SESSION_COMMENT)
         public boolean singleSession = false;
 
-        @ConfigEntry(nameKey = "prop.commandPermissionLevel.name", descriptionKey = "prop.commandPermissionLevel.desc", comment = "Permission level required to use the op commands for Death Counter")
+        @ConfigEntry(nameKey = "prop.commandPermissionLevel.name", descriptionKey = "prop.commandPermissionLevel.desc", comment = Reference.COMMAND_PERMISSION_LEVEL_COMMENT)
         @ConfigEntry.BoundedInteger(min = 0, max = 4)
         public int commandPermissionLevel = 1;
     }
