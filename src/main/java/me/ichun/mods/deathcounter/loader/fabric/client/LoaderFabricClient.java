@@ -4,7 +4,7 @@ import me.ichun.mods.deathcounter.common.DeathCounter;
 import me.lortseam.completeconfig.data.Config;
 import net.fabricmc.api.ClientModInitializer;
 
-public class LoaderClientFabric
+public class LoaderFabricClient
         implements ClientModInitializer
 {
     @Override

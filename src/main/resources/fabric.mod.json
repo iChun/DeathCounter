@@ -22,7 +22,7 @@
       "me.ichun.mods.deathcounter.loader.fabric.LoaderFabric"
     ],
     "client": [
-      "me.ichun.mods.deathcounter.loader.fabric.client.LoaderClientFabric"
+      "me.ichun.mods.deathcounter.loader.fabric.client.LoaderFabricClient"
     ],
     "modmenu": [
       "me.ichun.mods.deathcounter.loader.fabric.client.ModMenuIntegration"

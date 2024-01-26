@@ -68,7 +68,7 @@ public class WatchServiceThread extends Thread
                     boolean valid = key.reset();
                     if (!valid) { break; }
                 }
-                Thread.sleep(50);
+                Thread.sleep(500);
             }
         } catch (Throwable e) {
             DeathCounter.LOGGER.error("Error with watch service", e);
