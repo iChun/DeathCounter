@@ -33,11 +33,11 @@ public class CommandDeathCounter
                             Entity ent = source.getSource().getEntity();
                             if(ent != null)
                             {
-                                broadcastLeaderboard(Collections.singleton(ent), null, DeathCounter.config.leaderboardCount.get());
+                                broadcastLeaderboard(Collections.singleton(ent), null, DeathCounter.config.leaderboardCount);
                             }
                             else
                             {
-                                broadcastLeaderboard(Collections.emptyList(), source.getSource(), DeathCounter.config.leaderboardCount.get());
+                                broadcastLeaderboard(Collections.emptyList(), source.getSource(), DeathCounter.config.leaderboardCount);
                             }
                             return 0;
                         })
@@ -58,7 +58,7 @@ public class CommandDeathCounter
                                             }
                                             return 0;
                                         })))
-                        .then(Commands.literal("set").requires((p) -> p.hasPermission(DeathCounter.config.commandPermissionLevel.get()))
+                        .then(Commands.literal("set").requires((p) -> p.hasPermission(DeathCounter.config.commandPermissionLevel))
                                 .then(Commands.argument("name/\"all\"", StringArgumentType.word())
                                         .suggests((commandContext, suggestionsBuilder) -> SharedSuggestionProvider.suggest(commandContext.getSource().getServer().getPlayerList().getPlayerNamesArray(), suggestionsBuilder))
                                         .then(Commands.argument("value", IntegerArgumentType.integer(0))
@@ -67,18 +67,18 @@ public class CommandDeathCounter
                                                     DeathCounter.deathHandler.setDeaths(StringArgumentType.getString(source, "name/\"all\""), deaths);
                                                     return deaths;
                                                 }))))
-                        .then(Commands.literal("broadcast").requires((p) -> p.hasPermission(DeathCounter.config.commandPermissionLevel.get()))
+                        .then(Commands.literal("broadcast").requires((p) -> p.hasPermission(DeathCounter.config.commandPermissionLevel))
                                 .executes((source) -> {
                                     //send to all
                                     source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
-                                    broadcastLeaderboard(source.getSource().getServer().getPlayerList().getPlayers(), null, DeathCounter.config.leaderboardCount.get());
+                                    broadcastLeaderboard(source.getSource().getServer().getPlayerList().getPlayers(), null, DeathCounter.config.leaderboardCount);
                                     return 0;
                                 })
                                 .then(Commands.argument("targets", EntityArgument.players())
                                         .executes((source) -> {
                                             //send to specific
                                             source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
-                                            broadcastLeaderboard(EntityArgument.getPlayers(source, "targets"), null, DeathCounter.config.leaderboardCount.get());
+                                            broadcastLeaderboard(EntityArgument.getPlayers(source, "targets"), null, DeathCounter.config.leaderboardCount);
                                             return 0;
                                         })
                                         .then(Commands.argument("count", IntegerArgumentType.integer(1))
@@ -95,7 +95,7 @@ public class CommandDeathCounter
                                             broadcastLeaderboard(source.getSource().getServer().getPlayerList().getPlayers(), null, IntegerArgumentType.getInteger(source, "count"));
                                             return 0;
                                         })))
-                        .then(Commands.literal("transfer").requires((p) -> p.hasPermission(DeathCounter.config.commandPermissionLevel.get()))
+                        .then(Commands.literal("transfer").requires((p) -> p.hasPermission(DeathCounter.config.commandPermissionLevel))
                                 .then(Commands.argument("from", StringArgumentType.word())
                                         .suggests((commandContext, suggestionsBuilder) -> SharedSuggestionProvider.suggest(commandContext.getSource().getServer().getPlayerList().getPlayerNamesArray(), suggestionsBuilder))
                                         .then(Commands.argument("to", StringArgumentType.word())

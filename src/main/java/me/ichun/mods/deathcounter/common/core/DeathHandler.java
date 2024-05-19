@@ -9,6 +9,8 @@ import me.ichun.mods.deathcounter.common.DeathCounter;
 import me.ichun.mods.deathcounter.common.command.CommandDeathCounter;
 import me.ichun.mods.deathcounter.mixin.LevelStorageAccessAccessorMixin;
 import me.ichun.mods.deathcounter.mixin.MinecraftServerAccessorMixin;
+import me.ichun.mods.ichunutil.common.entity.EntityHelper;
+import me.ichun.mods.ichunutil.common.util.WatchServiceThread;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -27,7 +29,6 @@ import java.util.stream.Collectors;
 
 public abstract class DeathHandler
 {
-    private static final Map<Path, WatchServiceThread> WATCH_SERVICES = Collections.synchronizedMap(new HashMap<>()); //Taken from iChunUtil, thanks past iChun!
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private TreeMap<String, Integer> deaths = new TreeMap<>(Comparator.naturalOrder());
     private TreeMap<Integer, TreeSet<String>> ranking = new TreeMap<>(Comparator.reverseOrder());
@@ -39,7 +40,7 @@ public abstract class DeathHandler
     {
         if(!living.getCommandSenderWorld().isClientSide() &&
                 living instanceof ServerPlayer &&
-                !isFakePlayer((ServerPlayer)living) &&
+                !EntityHelper.isFakePlayer((ServerPlayer)living) &&
                 !postAddPlayerDeathStatEvent((ServerPlayer)living, source)
         )
         {
@@ -49,32 +50,24 @@ public abstract class DeathHandler
 
     public void onServerAboutToStart(MinecraftServer server)
     {
-        if(!DeathCounter.config.singleSession.get())
+        if(!DeathCounter.config.singleSession)
         {
             Path worldSavePath = ((LevelStorageAccessAccessorMixin)((MinecraftServerAccessorMixin)server).getStorageSource()).getLevelDirectory().path();
             currentDeathsFile = worldSavePath.resolve("deaths.json");
-            synchronized(WATCH_SERVICES)
-            {
-                WatchServiceThread watchServiceThread = WATCH_SERVICES.computeIfAbsent(currentDeathsFile.getParent(), k -> {
-                    WatchServiceThread thread = new WatchServiceThread(currentDeathsFile.getParent(), fileName -> {
-                        long lastChange = 0L;
-                        try
-                        {
-                            lastChange = Files.getLastModifiedTime(currentDeathsFile).toMillis();
-                        }
-                        catch(IOException ignored)
-                        {
-                        }
-                        if(currentDeathsFile != null && !DeathCounter.config.singleSession.get() && !writing && timestamp != lastChange)
-                        {
-                            server.execute(this::loadDeaths);
-                        }
-                    });
-                    thread.start();
-                    return thread;
-                });
-                watchServiceThread.addFileToWatch("deaths.json");
-            }
+            WatchServiceThread.watchFile(currentDeathsFile, fileName -> {
+                long lastChange = 0L;
+                try
+                {
+                    lastChange = Files.getLastModifiedTime(currentDeathsFile).toMillis();
+                }
+                catch(IOException ignored)
+                {
+                }
+                if(currentDeathsFile != null && !DeathCounter.config.singleSession && !writing && timestamp != lastChange)
+                {
+                    server.execute(this::loadDeaths);
+                }
+            }).setSleepTime(500L);
             loadDeaths();
         }
     }
@@ -88,7 +81,7 @@ public abstract class DeathHandler
     {
         if(currentDeathsFile != null)
         {
-            terminateWatchServices();
+            WatchServiceThread.stopWatchFile(currentDeathsFile);
         }
         currentDeathsFile = null;
         deaths.clear();
@@ -104,15 +97,6 @@ public abstract class DeathHandler
         return message instanceof MutableComponent && message.getContents() instanceof TranslatableContents && (((TranslatableContents)message.getContents()).getKey().startsWith("message.deathcounter.") || ((TranslatableContents)message.getContents()).getKey().startsWith("commands.deathcounter.leaderboard"));
     }
 
-    private static void terminateWatchServices()
-    {
-        synchronized(WATCH_SERVICES)
-        {
-            WATCH_SERVICES.forEach((k, v) -> v.stopThread());
-            WATCH_SERVICES.clear();
-        }
-    }
-
     public abstract boolean postAddPlayerDeathStatEvent(ServerPlayer player, DamageSource source); //Return true = do not add death
 
     public void addDeath(ServerPlayer player)
@@ -121,7 +105,7 @@ public abstract class DeathHandler
         saveAndUpdateDeaths(); //this updates the rank as well.
         int rank = getRank(player.getName().getString());
 
-        switch(DeathCounter.config.messageType.get())
+        switch(DeathCounter.config.messageType)
         {
             case SHORT -> player.sendSystemMessage(Component.translatable("message.deathcounter.deathAndRank", playerDeaths, rank)); //sendMessage
             case LONG ->
@@ -132,10 +116,10 @@ public abstract class DeathHandler
             case NONE -> {}
         }
 
-        switch(DeathCounter.config.broadcastOnDeath.get())
+        switch(DeathCounter.config.broadcastOnDeath)
         {
-            case SELF -> CommandDeathCounter.broadcastLeaderboard(Collections.singleton(player), null, DeathCounter.config.leaderboardCount.get());
-            case ALL -> CommandDeathCounter.broadcastLeaderboard(player.getServer().getPlayerList().getPlayers(), null,DeathCounter.config.leaderboardCount.get());
+            case SELF -> CommandDeathCounter.broadcastLeaderboard(Collections.singleton(player), null, DeathCounter.config.leaderboardCount);
+            case ALL -> CommandDeathCounter.broadcastLeaderboard(player.getServer().getPlayerList().getPlayers(), null,DeathCounter.config.leaderboardCount);
             case NONE -> {}
         }
     }
@@ -203,18 +187,17 @@ public abstract class DeathHandler
             DeathCounter.LOGGER.error("Tried to save deaths whilst saving deaths... what?");
             return;
         }
-        if(!DeathCounter.config.singleSession.get()) //single session. don't save deaths.
+        if(!DeathCounter.config.singleSession) //single session. don't save deaths.
         {
             writing = true;
             try
             {
-                Files.write(currentDeathsFile, gson.toJson(deaths).getBytes(StandardCharsets.UTF_8));
+                Files.writeString(currentDeathsFile, gson.toJson(deaths), StandardCharsets.UTF_8);
                 timestamp = Files.getLastModifiedTime(currentDeathsFile).toMillis();
             }
             catch(IOException e)
             {
-                DeathCounter.LOGGER.error("Error writing deaths.json: " + currentDeathsFile.toString());
-                e.printStackTrace();
+                DeathCounter.LOGGER.error("Error writing deaths.json: {}", currentDeathsFile.toString(), e);
             }
             writing = false;
         }
@@ -224,7 +207,7 @@ public abstract class DeathHandler
 
     public void loadDeaths()
     {
-        if(DeathCounter.config.singleSession.get()) //single session. don't load deaths.
+        if(DeathCounter.config.singleSession) //single session. don't load deaths.
         {
             return;
         }
@@ -235,17 +218,17 @@ public abstract class DeathHandler
         }
         if(!currentDeathsFile.toFile().exists())
         {
-            DeathCounter.LOGGER.info("Deaths not found, presuming new world: " + currentDeathsFile.toString());
+            DeathCounter.LOGGER.info("Deaths not found, presuming new world: {}", currentDeathsFile.toString());
             return;
         }
         else if(currentDeathsFile.toFile().isDirectory())
         {
-            DeathCounter.LOGGER.error("Deaths is a directory: " + currentDeathsFile.toString());
+            DeathCounter.LOGGER.error("Deaths is a directory: {}", currentDeathsFile.toString());
             return;
         }
         if(writing)
         {
-            DeathCounter.LOGGER.error("Trying to read file whilst it is being written: " + currentDeathsFile.toString());
+            DeathCounter.LOGGER.error("Trying to read file whilst it is being written: {}", currentDeathsFile.toString());
             return;
         }
 
@@ -257,8 +240,7 @@ public abstract class DeathHandler
         }
         catch(IOException | JsonSyntaxException e)
         {
-            DeathCounter.LOGGER.error("Error reading deaths.json: " + currentDeathsFile.toString());
-            e.printStackTrace();
+            DeathCounter.LOGGER.error("Error reading deaths.json: {}", currentDeathsFile.toString(), e);
         }
         calculateRank();
     }
@@ -291,6 +273,4 @@ public abstract class DeathHandler
     {
         return ranking;
     }
-
-    public abstract boolean isFakePlayer(ServerPlayer player);
 }

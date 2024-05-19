@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ChatListenerMixin
 {
     @Inject(method = "handleSystemMessage", at = @At("HEAD"), cancellable = true)
-    public void deathcounter_handleSystemMessage(Component message, boolean isOverlay, CallbackInfo ci)
+    public void deathcounter$handleSystemMessage(Component message, boolean isOverlay, CallbackInfo ci)
     {
-        if(DeathCounter.configClient.hideDeathCounterMessages.get() && DeathCounter.deathHandler.isMessageOurs(message))
+        if(DeathCounter.configClient.hideDeathCounterMessages && DeathCounter.deathHandler.isMessageOurs(message))
         {
             ci.cancel();
         }

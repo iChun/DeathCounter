@@ -12,9 +12,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
-import java.util.Locale;
-
-public class DeathHandlerNeoforge extends DeathHandler
+public class DeathHandlerNeoForge extends DeathHandler
 {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onLivingDeathEvent(LivingDeathEvent event)
@@ -44,11 +42,5 @@ public class DeathHandlerNeoforge extends DeathHandler
     public boolean postAddPlayerDeathStatEvent(ServerPlayer player, DamageSource source)
     {
         return NeoForge.EVENT_BUS.post(new AddPlayerDeathStatEvent(player, source)).isCanceled();
-    }
-
-    @Override
-    public boolean isFakePlayer(ServerPlayer player)
-    {
-        return player.connection == null || player.getClass().getSimpleName().toLowerCase(Locale.ROOT).contains("fakeplayer");
     }
 }

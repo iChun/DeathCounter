@@ -12,8 +12,6 @@ import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.Locale;
-
 public class DeathHandlerForge extends DeathHandler
 {
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -44,11 +42,5 @@ public class DeathHandlerForge extends DeathHandler
     public boolean postAddPlayerDeathStatEvent(ServerPlayer player, DamageSource source)
     {
         return MinecraftForge.EVENT_BUS.post(new AddPlayerDeathStatEvent(player, source));
-    }
-
-    @Override
-    public boolean isFakePlayer(ServerPlayer player)
-    {
-        return player.connection == null || player.getClass().getSimpleName().toLowerCase(Locale.ROOT).contains("fakeplayer");
     }
 }

@@ -1,13 +1,30 @@
 package me.ichun.mods.deathcounter.client;
 
-import me.ichun.mods.deathcounter.common.core.Config;
+import me.ichun.mods.deathcounter.common.DeathCounter;
+import me.ichun.mods.ichunutil.common.config.ConfigBase;
+import org.jetbrains.annotations.NotNull;
 
-public abstract class ConfigClient
+public class ConfigClient extends ConfigBase
 {
-    public Config.ConfigWrapper<Boolean> hideDeathCounterMessages;
+    public boolean hideDeathCounterMessages = false;
 
-    protected static class Reference
+    @NotNull
+    @Override
+    public String getModId()
     {
-        public static final String HIDE_DEATH_COUNTER_MESSAGES_COMMENT = "Enable this and death counter messages will not show up in chat.";
+        return DeathCounter.MOD_ID;
+    }
+
+    @NotNull
+    @Override
+    public String getConfigName()
+    {
+        return DeathCounter.MOD_NAME;
+    }
+
+    @Override
+    public Type getConfigType()
+    {
+        return Type.CLIENT;
     }
 }
