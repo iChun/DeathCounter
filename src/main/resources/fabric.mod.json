@@ -1,19 +1,20 @@
 {
   "schemaVersion": 1,
   "id": "deathcounter",
-  "version": "${version}",
+  "version": "${mod_version}",
 
   "name": "Death Counter",
-  "description": "Simple death counter for servers.",
+  "description": "${mod_description}",
   "authors": [
     "iChun"
   ],
   "contact": {
-    "homepage": "https://github.com/iChun/Death-Counter",
-    "issues": "https://github.com/iChun/Death-Counter/issues"
+    "homepage": "${mod_url_home}",
+    "sources": "${mod_url_sources}",
+    "issues": "${mod_url_issues}"
   },
 
-  "license": "GNU Lesser General Public License v3.0",
+  "license": "${mod_license}",
   "icon": "icon.png",
 
   "environment": "*",
@@ -33,11 +34,19 @@
     "deathcounter.mixins.json"
   ],
 
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "${mod_url_discord}"
+      }
+    }
+  },
+
   "depends": {
     "fabricloader": ">=0.15.0",
     "fabric-api": "*",
     "minecraft": ">=1.20.6 <1.21",
     "java": ">=21",
-    "ichunutil": "*"
+    "ichunutil": ">=1.0.0"
   }
 }
