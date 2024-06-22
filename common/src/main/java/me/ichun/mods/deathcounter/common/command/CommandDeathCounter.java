@@ -28,98 +28,98 @@ public class CommandDeathCounter
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher)
     {
         LiteralCommandNode<CommandSourceStack> command =
-                dispatcher.register(Commands.literal("dc")
+            dispatcher.register(Commands.literal("dc")
+                .executes((source) -> {
+                    Entity ent = source.getSource().getEntity();
+                    if(ent != null)
+                    {
+                        broadcastLeaderboard(Collections.singleton(ent), null, DeathCounter.config.leaderboardCount);
+                    }
+                    else
+                    {
+                        broadcastLeaderboard(Collections.emptyList(), source.getSource(), DeathCounter.config.leaderboardCount);
+                    }
+                    return 0;
+                })
+                .then(Commands.literal("get")
+                    .then(Commands.argument("name", StringArgumentType.word())
+                        .suggests((commandContext, suggestionsBuilder) -> SharedSuggestionProvider.suggest(commandContext.getSource().getServer().getPlayerList().getPlayerNamesArray(), suggestionsBuilder))
                         .executes((source) -> {
-                            Entity ent = source.getSource().getEntity();
-                            if(ent != null)
+                            String name = StringArgumentType.getString(source, "name");
+                            int deaths = DeathCounter.deathHandler.getDeaths(name);
+                            int rank = DeathCounter.deathHandler.getRank(name);
+                            if(deaths > 0)
                             {
-                                broadcastLeaderboard(Collections.singleton(ent), null, DeathCounter.config.leaderboardCount);
+                                source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.get", name, deaths, rank), false);
                             }
                             else
                             {
-                                broadcastLeaderboard(Collections.emptyList(), source.getSource(), DeathCounter.config.leaderboardCount);
+                                source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.get.none", name), false);
                             }
                             return 0;
+                        })))
+                .then(Commands.literal("set").requires((p) -> p.hasPermission(DeathCounter.config.commandPermissionLevel))
+                    .then(Commands.argument("name/\"all\"", StringArgumentType.word())
+                        .suggests((commandContext, suggestionsBuilder) -> SharedSuggestionProvider.suggest(commandContext.getSource().getServer().getPlayerList().getPlayerNamesArray(), suggestionsBuilder))
+                        .then(Commands.argument("value", IntegerArgumentType.integer(0))
+                            .executes((source) -> {
+                                int deaths = IntegerArgumentType.getInteger(source, "value");
+                                DeathCounter.deathHandler.setDeaths(StringArgumentType.getString(source, "name/\"all\""), deaths);
+                                return deaths;
+                            }))))
+                .then(Commands.literal("broadcast").requires((p) -> p.hasPermission(DeathCounter.config.commandPermissionLevel))
+                    .executes((source) -> {
+                        //send to all
+                        source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
+                        broadcastLeaderboard(source.getSource().getServer().getPlayerList().getPlayers(), null, DeathCounter.config.leaderboardCount);
+                        return 0;
+                    })
+                    .then(Commands.argument("targets", EntityArgument.players())
+                        .executes((source) -> {
+                            //send to specific
+                            source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
+                            broadcastLeaderboard(EntityArgument.getPlayers(source, "targets"), null, DeathCounter.config.leaderboardCount);
+                            return 0;
                         })
-                        .then(Commands.literal("get")
-                                .then(Commands.argument("name", StringArgumentType.word())
-                                        .suggests((commandContext, suggestionsBuilder) -> SharedSuggestionProvider.suggest(commandContext.getSource().getServer().getPlayerList().getPlayerNamesArray(), suggestionsBuilder))
-                                        .executes((source) -> {
-                                            String name = StringArgumentType.getString(source, "name");
-                                            int deaths = DeathCounter.deathHandler.getDeaths(name);
-                                            int rank = DeathCounter.deathHandler.getRank(name);
-                                            if(deaths > 0)
-                                            {
-                                                source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.get", name, deaths, rank), false);
-                                            }
-                                            else
-                                            {
-                                                source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.get.none", name), false);
-                                            }
-                                            return 0;
-                                        })))
-                        .then(Commands.literal("set").requires((p) -> p.hasPermission(DeathCounter.config.commandPermissionLevel))
-                                .then(Commands.argument("name/\"all\"", StringArgumentType.word())
-                                        .suggests((commandContext, suggestionsBuilder) -> SharedSuggestionProvider.suggest(commandContext.getSource().getServer().getPlayerList().getPlayerNamesArray(), suggestionsBuilder))
-                                        .then(Commands.argument("value", IntegerArgumentType.integer(0))
-                                                .executes((source) -> {
-                                                    int deaths = IntegerArgumentType.getInteger(source, "value");
-                                                    DeathCounter.deathHandler.setDeaths(StringArgumentType.getString(source, "name/\"all\""), deaths);
-                                                    return deaths;
-                                                }))))
-                        .then(Commands.literal("broadcast").requires((p) -> p.hasPermission(DeathCounter.config.commandPermissionLevel))
-                                .executes((source) -> {
-                                    //send to all
-                                    source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
-                                    broadcastLeaderboard(source.getSource().getServer().getPlayerList().getPlayers(), null, DeathCounter.config.leaderboardCount);
-                                    return 0;
-                                })
-                                .then(Commands.argument("targets", EntityArgument.players())
-                                        .executes((source) -> {
-                                            //send to specific
-                                            source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
-                                            broadcastLeaderboard(EntityArgument.getPlayers(source, "targets"), null, DeathCounter.config.leaderboardCount);
-                                            return 0;
-                                        })
-                                        .then(Commands.argument("count", IntegerArgumentType.integer(1))
-                                                .executes((source) -> {
-                                                    //broadcast specific count
-                                                    source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
-                                                    broadcastLeaderboard(EntityArgument.getPlayers(source, "targets"), null, IntegerArgumentType.getInteger(source, "count"));
-                                                    return 0;
-                                                })))
-                                .then(Commands.argument("count", IntegerArgumentType.integer(1))
-                                        .executes((source) -> {
-                                            //broadcast specific count
-                                            source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
-                                            broadcastLeaderboard(source.getSource().getServer().getPlayerList().getPlayers(), null, IntegerArgumentType.getInteger(source, "count"));
-                                            return 0;
-                                        })))
-                        .then(Commands.literal("transfer").requires((p) -> p.hasPermission(DeathCounter.config.commandPermissionLevel))
-                                .then(Commands.argument("from", StringArgumentType.word())
-                                        .suggests((commandContext, suggestionsBuilder) -> SharedSuggestionProvider.suggest(commandContext.getSource().getServer().getPlayerList().getPlayerNamesArray(), suggestionsBuilder))
-                                        .then(Commands.argument("to", StringArgumentType.word())
-                                                .suggests((commandContext, suggestionsBuilder) -> SharedSuggestionProvider.suggest(commandContext.getSource().getServer().getPlayerList().getPlayerNamesArray(), suggestionsBuilder))
-                                                .executes((source) -> {
-                                                    //transfer
-                                                    String from = StringArgumentType.getString(source, "from");
-                                                    String to = StringArgumentType.getString(source, "to");
-                                                    int deaths = DeathCounter.deathHandler.transferDeaths(from, to);
-                                                    if(deaths > 0)
-                                                    {
-                                                        source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.transfer", deaths, from, to), true);
-                                                    }
-                                                    else
-                                                    {
-                                                        throw TRANSFER_FAIL.create(from);
-                                                    }
-                                                    return deaths;
-                                                }))))
-                );
+                        .then(Commands.argument("count", IntegerArgumentType.integer(1))
+                            .executes((source) -> {
+                                //broadcast specific count
+                                source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
+                                broadcastLeaderboard(EntityArgument.getPlayers(source, "targets"), null, IntegerArgumentType.getInteger(source, "count"));
+                                return 0;
+                            })))
+                    .then(Commands.argument("count", IntegerArgumentType.integer(1))
+                        .executes((source) -> {
+                            //broadcast specific count
+                            source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.leaderboard.broadcasted"), true);
+                            broadcastLeaderboard(source.getSource().getServer().getPlayerList().getPlayers(), null, IntegerArgumentType.getInteger(source, "count"));
+                            return 0;
+                        })))
+                .then(Commands.literal("transfer").requires((p) -> p.hasPermission(DeathCounter.config.commandPermissionLevel))
+                    .then(Commands.argument("from", StringArgumentType.word())
+                        .suggests((commandContext, suggestionsBuilder) -> SharedSuggestionProvider.suggest(commandContext.getSource().getServer().getPlayerList().getPlayerNamesArray(), suggestionsBuilder))
+                        .then(Commands.argument("to", StringArgumentType.word())
+                            .suggests((commandContext, suggestionsBuilder) -> SharedSuggestionProvider.suggest(commandContext.getSource().getServer().getPlayerList().getPlayerNamesArray(), suggestionsBuilder))
+                            .executes((source) -> {
+                                //transfer
+                                String from = StringArgumentType.getString(source, "from");
+                                String to = StringArgumentType.getString(source, "to");
+                                int deaths = DeathCounter.deathHandler.transferDeaths(from, to);
+                                if(deaths > 0)
+                                {
+                                    source.getSource().sendSuccess(() -> Component.translatable("commands.deathcounter.transfer", deaths, from, to), true);
+                                }
+                                else
+                                {
+                                    throw TRANSFER_FAIL.create(from);
+                                }
+                                return deaths;
+                            }))))
+            );
 
         //register alias.
         dispatcher.register(Commands.literal("deathcounter")
-                .redirect(command));
+            .redirect(command));
     }
 
     public static void broadcastLeaderboard(Collection<? extends Entity> entities, CommandSourceStack source, final int count)

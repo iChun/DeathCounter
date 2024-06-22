@@ -3,8 +3,10 @@ package me.ichun.mods.deathcounter.loader.forge;
 import me.ichun.mods.deathcounter.client.ConfigClient;
 import me.ichun.mods.deathcounter.common.DeathCounter;
 import me.ichun.mods.deathcounter.common.core.Config;
+import me.ichun.mods.deathcounter.loader.forge.client.EventHandlerClientForge;
 import me.ichun.mods.ichunutil.common.iChunUtil;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -19,14 +21,17 @@ public class LoaderForge extends DeathCounter
         //register config
         config = iChunUtil.d().registerConfig(new Config());
 
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> this::setupClientConfig);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> this::setupClient);
 
         MinecraftForge.EVENT_BUS.register(DeathCounter.deathHandler = new DeathHandlerForge());
     }
 
-    private void setupClientConfig()
+    @OnlyIn(Dist.CLIENT)
+    private void setupClient()
     {
         //register config
         configClient = iChunUtil.d().registerConfig(new ConfigClient());
+
+        MinecraftForge.EVENT_BUS.register(eventHandlerClient = new EventHandlerClientForge());
     }
 }

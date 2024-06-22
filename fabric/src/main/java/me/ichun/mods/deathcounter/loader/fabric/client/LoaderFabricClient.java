@@ -13,5 +13,7 @@ public class LoaderFabricClient
     {
         //register config
         DeathCounter.configClient = iChunUtil.d().registerConfig(new ConfigClient());
+
+        DeathCounter.eventHandlerClient = new EventHandlerClientFabric();
     }
 }

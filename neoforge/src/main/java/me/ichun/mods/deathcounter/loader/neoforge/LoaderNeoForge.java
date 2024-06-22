@@ -2,7 +2,10 @@ package me.ichun.mods.deathcounter.loader.neoforge;
 
 import me.ichun.mods.deathcounter.common.DeathCounter;
 import me.ichun.mods.deathcounter.common.core.Config;
+import me.ichun.mods.deathcounter.loader.neoforge.client.EventHandlerClientNeoForge;
 import me.ichun.mods.ichunutil.common.iChunUtil;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -20,15 +23,18 @@ public class LoaderNeoForge extends DeathCounter
 
         if(FMLEnvironment.dist.isClient())
         {
-            setupClientConfig(modEventBus);
+            setupClient(modEventBus);
         }
 
         NeoForge.EVENT_BUS.register(DeathCounter.deathHandler = new DeathHandlerNeoForge());
     }
 
-    private void setupClientConfig(IEventBus modEventBus)
+    @OnlyIn(Dist.CLIENT)
+    private void setupClient(IEventBus modEventBus)
     {
         //register config
         config = iChunUtil.d().registerConfig(new Config(), modEventBus);
+
+        NeoForge.EVENT_BUS.register(eventHandlerClient = new EventHandlerClientNeoForge());
     }
 }
