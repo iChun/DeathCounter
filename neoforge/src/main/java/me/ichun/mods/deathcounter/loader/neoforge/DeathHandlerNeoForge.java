@@ -7,10 +7,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
 public class DeathHandlerNeoForge extends DeathHandler
 {
@@ -18,24 +15,6 @@ public class DeathHandlerNeoForge extends DeathHandler
     public void onLivingDeathEvent(LivingDeathEvent event)
     {
         super.onLivingDeath(event.getEntity(), event.getSource());
-    }
-
-    @SubscribeEvent
-    public void onServerAboutToStartEvent(ServerStartingEvent event)
-    {
-        super.onServerAboutToStart(event.getServer());
-    }
-
-    @SubscribeEvent
-    public void onRegisterCommands(RegisterCommandsEvent event)
-    {
-        super.onRegisterCommands(event.getDispatcher());
-    }
-
-    @SubscribeEvent
-    public void onServerStoppingEvent(ServerStoppingEvent event)
-    {
-        super.onServerStopping();
     }
 
     @Override

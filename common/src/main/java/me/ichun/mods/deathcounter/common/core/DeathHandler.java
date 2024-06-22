@@ -8,6 +8,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import me.ichun.mods.deathcounter.common.DeathCounter;
 import me.ichun.mods.deathcounter.common.command.CommandDeathCounter;
 import me.ichun.mods.ichunutil.common.entity.EntityHelper;
+import me.ichun.mods.ichunutil.common.iChunUtil;
 import me.ichun.mods.ichunutil.common.util.WatchServiceThread;
 import me.ichun.mods.ichunutil.mixin.LevelStorageAccessAccessorMixin;
 import me.ichun.mods.ichunutil.mixin.MinecraftServerAccessorMixin;
@@ -35,6 +36,13 @@ public abstract class DeathHandler
     private Path currentDeathsFile = null;
     private long timestamp = 0L;
     private boolean writing = false;
+
+    public DeathHandler()
+    {
+        iChunUtil.eS().registerServerAboutToStartListener(this::onServerAboutToStart);
+        iChunUtil.eS().registerCommandRegistrationListener(this::onRegisterCommands);
+        iChunUtil.eS().registerServerStoppingListener(server -> onServerStopping());
+    }
 
     public void onLivingDeath(LivingEntity living, DamageSource source)
     {
