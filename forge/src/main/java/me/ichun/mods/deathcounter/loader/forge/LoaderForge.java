@@ -4,11 +4,14 @@ import me.ichun.mods.deathcounter.client.ConfigClient;
 import me.ichun.mods.deathcounter.common.DeathCounter;
 import me.ichun.mods.deathcounter.common.core.Config;
 import me.ichun.mods.deathcounter.loader.forge.client.EventHandlerClientForge;
+import me.ichun.mods.ichunutil.client.gui.config.WorkspaceConfigs;
 import me.ichun.mods.ichunutil.common.iChunUtil;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod(DeathCounter.MOD_ID)
@@ -33,5 +36,7 @@ public class LoaderForge extends DeathCounter
         configClient = iChunUtil.d().registerConfig(new ConfigClient());
 
         MinecraftForge.EVENT_BUS.register(eventHandlerClient = new EventHandlerClientForge());
+
+        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory(WorkspaceConfigs::new));
     }
 }
