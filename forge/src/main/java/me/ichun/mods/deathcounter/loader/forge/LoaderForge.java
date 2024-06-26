@@ -37,6 +37,6 @@ public class LoaderForge extends DeathCounter
 
         MinecraftForge.EVENT_BUS.register(eventHandlerClient = new EventHandlerClientForge());
 
-        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory(WorkspaceConfigs::new));
+        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((mc, screen) -> new WorkspaceConfigs(screen)));
     }
 }
