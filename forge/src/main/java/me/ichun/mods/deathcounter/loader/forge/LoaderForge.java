@@ -11,32 +11,32 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(DeathCounter.MOD_ID)
 public class LoaderForge extends DeathCounter
 {
-    public LoaderForge()
+    public LoaderForge(FMLJavaModLoadingContext context)
     {
         modProxy = this;
 
         //register config
-        config = iChunUtil.d().registerConfig(new Config());
+        config = iChunUtil.d().registerConfig(new Config(), context);
 
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> this::setupClient);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> initClient(context));
 
         MinecraftForge.EVENT_BUS.register(DeathCounter.deathHandler = new DeathHandlerForge());
     }
 
     @OnlyIn(Dist.CLIENT)
-    private void setupClient()
+    private void initClient(FMLJavaModLoadingContext context)
     {
         //register config
-        configClient = iChunUtil.d().registerConfig(new ConfigClient());
+        configClient = iChunUtil.d().registerConfig(new ConfigClient(), context);
 
         MinecraftForge.EVENT_BUS.register(eventHandlerClient = new EventHandlerClientForge());
 
-        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory(WorkspaceConfigs::new));
+        context.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((mc, screen) -> new WorkspaceConfigs(screen, MOD_ID)));
     }
 }
