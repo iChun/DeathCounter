@@ -25,7 +25,7 @@ public class LoaderNeoForge extends DeathCounter
         modProxy = this;
 
         //register config
-        config = iChunUtil.d().registerConfig(new Config(), modEventBus);
+        config = iChunUtil.d().registerConfig(new Config(), modEventBus, container);
 
         if(FMLEnvironment.dist.isClient())
         {
@@ -39,7 +39,7 @@ public class LoaderNeoForge extends DeathCounter
     private void setupClient(IEventBus modEventBus, ModContainer container)
     {
         //register config
-        configClient = iChunUtil.d().registerConfig(new ConfigClient(), modEventBus);
+        configClient = iChunUtil.d().registerConfig(new ConfigClient(), modEventBus, container);
 
         NeoForge.EVENT_BUS.register(eventHandlerClient = new EventHandlerClientNeoForge());
 
